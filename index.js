@@ -23,6 +23,12 @@ const typeCastMap = {
       if (value) return value;
     }
   },
+  date(value) {
+    if (value) {
+      value = new Date(value);
+      if (value) return value;
+    }
+  },
 };
 
 /**
