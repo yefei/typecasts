@@ -26,7 +26,7 @@ const typeCastMap = {
   date(value) {
     if (value) {
       value = new Date(value);
-      if (value) return value;
+      if (value.getTime()) return value;
     }
   },
 };

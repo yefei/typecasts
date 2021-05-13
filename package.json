@@ -4,5 +4,11 @@
   "main": "index.js",
   "author": "YeFei",
   "license": "MIT",
-  "devDependencies": {}
+  "scripts": {
+    "lint": "eslint --max-warnings 0",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "mocha": "^8.4.0"
+  }
 }
