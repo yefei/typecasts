@@ -5,6 +5,41 @@ export type castType = 'number' | 'int' | 'float' | 'bool' | 'trim' | 'date' | '
 // 自定义转换函数
 export type castTypeFunc = (value: any) => any;
 
+export type validates = {
+  /** 小于 */
+  lt?: number;
+
+  /** 大于 */
+  gt?: number;
+
+  /** 等于 */
+  eq?: any;
+
+  /** 不等于 */
+  neq?: any;
+
+  /** 最大长度 */
+  maxLength?: number;
+
+  /** 最下长度 */
+  minLength?: number;
+
+  /** 必须在指定值内 */
+  in?: any[];
+
+  /** 不能在指定值内 */
+  notIn?: any[];
+
+  /** 正则匹配 */
+  regexp?: string;
+
+  /** 必须为email格式 */
+  email?: boolean;
+
+  /** 符合标准url slug */
+  slug?: boolean;
+}
+
 export type castTypeOption = {
   /** 目标类型, 默认: origin */
   type?: castType | castTypeFunc;
@@ -20,6 +55,9 @@ export type castTypeOption = {
 
   /** 是否为必须项 */
   required?: boolean | string;
+
+  /** 结果验证 */
+  validate?: validates;
 };
 
 // 转换字段

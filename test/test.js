@@ -48,4 +48,12 @@ describe('test', function() {
       }]);
     }, TypeError);
   });
+
+  it('typeCastPickOption(validate)', function() {
+    assert.throws(() => {
+      typeCastPick(inputData, [{
+        a: { validate: { gt: 100 } }
+      }]);
+    }, TypeError);
+  });
 });

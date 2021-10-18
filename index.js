@@ -1,43 +1,7 @@
 'use strict';
 
-const typeCastMap = {
-  number(value) {
-    value = Number(value);
-    if (!isNaN(value)) return value;
-  },
-  int(value) {
-    value = parseInt(value);
-    if (!isNaN(value)) return value;
-  },
-  float(value) {
-    value = parseFloat(value);
-    if (!isNaN(value)) return value;
-  },
-  bool(value) {
-    value = String(value).toLowerCase();
-    return ['y', '1', 'yes', 'on', 'true'].indexOf(value) !== -1;
-  },
-  trim(value) {
-    if (value) {
-      value = String(value).trim();
-      if (value) return value;
-    }
-  },
-  string(value) {
-    if (value) {
-      return String(value);
-    }
-  },
-  origin(value) {
-    return value;
-  },
-  date(value) {
-    if (value) {
-      value = new Date(value);
-      if (value.getTime()) return value;
-    }
-  },
-};
+const typeCastMap = require('./lib/types');
+const validateMap = require('./lib/validates');
 
 /**
  * 类型转换
@@ -98,15 +62,29 @@ function typeCastPick(input, fields) {
         let defaultValue;
         let splitter;
         let required = false;
+        let validate;
         if (typeof type === 'object') {
           if (type.as) outKey = type.as;
           if (type.default) defaultValue = type.default;
           if (type.splitter) splitter = type.splitter;
           if (type.required) required = type.required;
+          if (type.validate) validate = type.validate;
           type = type.type || 'origin';
         }
         const value = typeCast(input[k], type, splitter);
-        if (value !== undefined) out[outKey] = value;
+        if (value !== undefined) {
+          if (validate) {
+            Object.keys(validate).map(name => {
+              if (validateMap[name] === undefined) {
+                throw new TypeError(`Unknown validate: '${k}' => ${name}`);
+              }
+              if (!validateMap[name](value, validate[name])) {
+                throw new TypeError(`Validate error: '${k}' => ${name}:${validate[name]}`);
+              }
+            });
+          }
+          out[outKey] = value;
+        }
         else if (defaultValue !== undefined) out[outKey] = defaultValue;
         else if (required) {
           throw new TypeError(typeof required === 'string' ? required : `The field '${k}' is required`);
