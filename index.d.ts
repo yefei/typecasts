@@ -6,8 +6,8 @@ export type castType = 'number' | 'int' | 'float' | 'bool' | 'trim' | 'date' | '
 export type castTypeFunc = (value: any) => any;
 
 export type castTypeOption = {
-  /** 目标类型 */
-  type: castType | castTypeFunc;
+  /** 目标类型, 默认: origin */
+  type?: castType | castTypeFunc;
 
   /** 别名 */
   as?: string;
@@ -17,6 +17,9 @@ export type castTypeOption = {
 
   /** 分割为数组 */
   splitter?: string;
+
+  /** 是否为必须项 */
+  required?: boolean | string;
 };
 
 // 转换字段

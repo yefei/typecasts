@@ -40,4 +40,12 @@ describe('test', function() {
       f: '123456',
     });
   });
+
+  it('typeCastPickOption(required)', function() {
+    assert.throws(() => {
+      typeCastPick(inputData, [{
+        miss: { required: true },
+      }]);
+    }, TypeError);
+  });
 });

@@ -85,32 +85,36 @@ function typeCast(value, type, splitter) {
 
 /**
  * 挑选输入值并进行类型转换
- * @param {{[key: string]: any}} input
+ * @param {{[field: string]: any}} input
  * @param {*[]} fields
  */
 function typeCastPick(input, fields) {
   const out = {};
-  fields.forEach(key => {
-    if (typeof key === 'object') {
-      Object.keys(key).forEach(k => {
-        if (input[k] === undefined) return;
-        let type = key[k];
+  fields.forEach(field => {
+    if (typeof field === 'object') {
+      Object.keys(field).forEach(k => {
+        let type = field[k];
         let outKey = k;
         let defaultValue;
         let splitter;
+        let required = false;
         if (typeof type === 'object') {
           if (type.as) outKey = type.as;
           if (type.default) defaultValue = type.default;
           if (type.splitter) splitter = type.splitter;
-          type = type.type;
+          if (type.required) required = type.required;
+          type = type.type || 'origin';
         }
         const value = typeCast(input[k], type, splitter);
         if (value !== undefined) out[outKey] = value;
         else if (defaultValue !== undefined) out[outKey] = defaultValue;
+        else if (required) {
+          throw new TypeError(typeof required === 'string' ? required : `The field '${k}' is required`);
+        }
       });
     } else {
-      const value = input[key];
-      if (value !== undefined) out[key] = value;
+      const value = input[field];
+      if (value !== undefined) out[field] = value;
     }
   });
   return out;
