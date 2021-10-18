@@ -23,6 +23,14 @@ const typeCastMap = {
       if (value) return value;
     }
   },
+  string(value) {
+    if (value) {
+      return String(value);
+    }
+  },
+  origin(value) {
+    return value;
+  },
   date(value) {
     if (value) {
       value = new Date(value);
@@ -86,8 +94,19 @@ function typeCastPick(input, fields) {
     if (typeof key === 'object') {
       Object.keys(key).forEach(k => {
         if (input[k] === undefined) return;
-        const value = typeCast(input[k], key[k]);
-        if (value !== undefined) out[k] = value;
+        let type = key[k];
+        let outKey = k;
+        let defaultValue;
+        let splitter;
+        if (typeof type === 'object') {
+          if (type.as) outKey = type.as;
+          if (type.default) defaultValue = type.default;
+          if (type.splitter) splitter = type.splitter;
+          type = type.type;
+        }
+        const value = typeCast(input[k], type, splitter);
+        if (value !== undefined) out[outKey] = value;
+        else if (defaultValue !== undefined) out[outKey] = defaultValue;
       });
     } else {
       const value = input[key];
