@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { typeCastPick } = require('..');
+const { typeCastPick, RequiredError, ValidateError } = require('..');
 
 const inputData = { a: 1, b: 't', c: 'str  ', d: '1,2,3,4', e: '2021-5-13 13:11:22', f: 'Invalid Date' };
 
@@ -46,7 +46,7 @@ describe('test', function() {
       typeCastPick(inputData, [{
         miss: { required: true },
       }]);
-    }, TypeError);
+    }, RequiredError);
   });
 
   it('typeCastPickOption(validate)', function() {
@@ -54,6 +54,6 @@ describe('test', function() {
       typeCastPick(inputData, [{
         a: { validate: { gt: 100 } }
       }]);
-    }, TypeError);
+    }, ValidateError);
   });
 });

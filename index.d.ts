@@ -21,7 +21,7 @@ export type validates = {
   /** 最大长度 */
   maxLength?: number;
 
-  /** 最下长度 */
+  /** 最小长度 */
   minLength?: number;
 
   /** 必须在指定值内 */
@@ -69,3 +69,14 @@ export type castFields = (
 export declare function typeCast(value: any, type: castType | castTypeFunc, splitter?: string): any;
 
 export declare function typeCastPick(input: { [key: string]: any }, fields: castFields[]): { [as: string]: any };
+
+export declare class RequiredError extends Error {
+  filed: string;
+};
+
+export declare class ValidateError extends Error {
+  field: string;
+  value: any;
+  validate: string;
+  target: any;
+};

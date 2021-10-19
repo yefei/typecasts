@@ -3,6 +3,25 @@
 const typeCastMap = require('./lib/types');
 const validateMap = require('./lib/validates');
 
+class RequiredError extends Error {
+  constructor(field, message) {
+    super(typeof message === 'string' ? message : `The field '${field}' is required`);
+    this.name = 'RequiredError';
+    this.field = field;
+  }
+}
+
+class ValidateError extends Error {
+  constructor(field, validate, value, target) {
+    super(`The field '${field}': ${value} ${validate} ${target}`);
+    this.name = 'ValidateError';
+    this.field = field;
+    this.value = value;
+    this.validate = validate;
+    this.target = target;
+  }
+}
+
 /**
  * 类型转换
  * type 如果为字符串则使用 typeCastMap 中预定义的类型转换。
@@ -79,7 +98,7 @@ function typeCastPick(input, fields) {
                 throw new TypeError(`Unknown validate: '${k}' => ${name}`);
               }
               if (!validateMap[name](value, validate[name])) {
-                throw new TypeError(`Validate error: '${k}' => ${name}:${validate[name]}`);
+                throw new ValidateError(k, name, value, validate[name]);
               }
             });
           }
@@ -87,7 +106,7 @@ function typeCastPick(input, fields) {
         }
         else if (defaultValue !== undefined) out[outKey] = defaultValue;
         else if (required) {
-          throw new TypeError(typeof required === 'string' ? required : `The field '${k}' is required`);
+          throw new RequiredError(k, required);
         }
       });
     } else {
@@ -101,4 +120,6 @@ function typeCastPick(input, fields) {
 module.exports = {
   typeCast,
   typeCastPick,
+  RequiredError,
+  ValidateError,
 };
