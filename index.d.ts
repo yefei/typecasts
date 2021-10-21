@@ -68,6 +68,8 @@ export type castFields = (
 
 export declare function typeCast(value: any, type: castType | castTypeFunc, splitter?: string): any;
 
+export declare function typeCastAs(value: any, type: castType | castTypeFunc | castTypeOption, key: string): [ as: string, value: any ];
+
 export declare function typeCastPick(input: { [key: string]: any }, fields: castFields[]): { [as: string]: any };
 
 export declare class RequiredError extends Error {

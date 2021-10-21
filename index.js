@@ -66,6 +66,40 @@ function typeCast(value, type, splitter) {
   return type(value);
 }
 
+function typeCastAs(data, type, key) {
+  let as = key;
+  let defaultValue;
+  let splitter;
+  let required = false;
+  let validate;
+  if (typeof type === 'object') {
+    if (type.as) as = type.as;
+    if (type.default) defaultValue = type.default;
+    if (type.splitter) splitter = type.splitter;
+    if (type.required) required = type.required;
+    if (type.validate) validate = type.validate;
+    type = type.type || 'origin';
+  }
+  let value = typeCast(data, type, splitter);
+  if (value !== undefined) {
+    if (validate) {
+      Object.keys(validate).map(name => {
+        if (validateMap[name] === undefined) {
+          throw new TypeError(`Unknown validate: '${key}' => ${name}`);
+        }
+        if (!validateMap[name](value, validate[name])) {
+          throw new ValidateError(key, name, value, validate[name]);
+        }
+      });
+    }
+  }
+  else if (defaultValue !== undefined) value = defaultValue;
+  else if (required) {
+    throw new RequiredError(key, required);
+  }
+  return [as, value];
+}
+
 /**
  * 挑选输入值并进行类型转换
  * @param {{[field: string]: any}} input
@@ -76,38 +110,8 @@ function typeCastPick(input, fields) {
   fields.forEach(field => {
     if (typeof field === 'object') {
       Object.keys(field).forEach(k => {
-        let type = field[k];
-        let outKey = k;
-        let defaultValue;
-        let splitter;
-        let required = false;
-        let validate;
-        if (typeof type === 'object') {
-          if (type.as) outKey = type.as;
-          if (type.default) defaultValue = type.default;
-          if (type.splitter) splitter = type.splitter;
-          if (type.required) required = type.required;
-          if (type.validate) validate = type.validate;
-          type = type.type || 'origin';
-        }
-        const value = typeCast(input[k], type, splitter);
-        if (value !== undefined) {
-          if (validate) {
-            Object.keys(validate).map(name => {
-              if (validateMap[name] === undefined) {
-                throw new TypeError(`Unknown validate: '${k}' => ${name}`);
-              }
-              if (!validateMap[name](value, validate[name])) {
-                throw new ValidateError(k, name, value, validate[name]);
-              }
-            });
-          }
-          out[outKey] = value;
-        }
-        else if (defaultValue !== undefined) out[outKey] = defaultValue;
-        else if (required) {
-          throw new RequiredError(k, required);
-        }
+        const [as, value] = typeCastAs(input[k], field[k], k);
+        if (value !== undefined) out[as] = value;
       });
     } else {
       const value = input[field];
@@ -119,6 +123,7 @@ function typeCastPick(input, fields) {
 
 module.exports = {
   typeCast,
+  typeCastAs,
   typeCastPick,
   RequiredError,
   ValidateError,
