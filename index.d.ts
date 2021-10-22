@@ -9,8 +9,14 @@ export type validates = {
   /** 小于 */
   lt?: number;
 
+  /** 小于等于 */
+  lte?: number;
+
   /** 大于 */
   gt?: number;
+
+  /** 大于等于 */
+  gte?: number;
 
   /** 等于 */
   eq?: any;
