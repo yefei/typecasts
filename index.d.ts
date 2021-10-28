@@ -44,6 +44,9 @@ export type validates = {
 
   /** 符合标准url slug */
   slug?: boolean;
+
+  /** URL protocols */
+  url?: string[];
 }
 
 export type castTypeOption = {
