@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { typeCastPick, RequiredError, ValidateError } = require('..');
 
-const inputData = { a: 1, b: 't', c: 'str  ', d: '1,2,3,4', e: '2021-5-13 13:11:22', f: 'Invalid Date' };
+const inputData = { a: 1, b: 't', c: 'str  ', d: '1,2,3,4', e: '2021-5-13 13:11:22', f: 'Invalid Date', url: 'http://test' };
 
 describe('test', function() {
   it('typeCastPick', function() {
@@ -53,6 +53,25 @@ describe('test', function() {
     assert.throws(() => {
       typeCastPick(inputData, [{
         a: { validate: { gt: 100 } }
+      }]);
+    }, ValidateError);
+  });
+
+  it('typeCastPickOption(validate.url)', function() {
+    typeCastPick(inputData, [{
+      url: { validate: { url: true } }
+    }]);
+    typeCastPick(inputData, [{
+      url: { validate: { url: ['http'] } }
+    }]);
+    assert.throws(() => {
+      typeCastPick(inputData, [{
+        url: { validate: { url: false } }
+      }]);
+    }, ValidateError);
+    assert.throws(() => {
+      typeCastPick(inputData, [{
+        url: { validate: { url: ['ftp'] } }
       }]);
     }, ValidateError);
   });

@@ -46,7 +46,7 @@ export type validates = {
   slug?: boolean;
 
   /** URL protocols */
-  url?: string[];
+  url?: boolean | string[];
 }
 
 export type castTypeOption = {
