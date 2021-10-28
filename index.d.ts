@@ -37,7 +37,7 @@ export type validates = {
   notIn?: any[];
 
   /** 正则匹配 */
-  regexp?: string;
+  regexp?: string | RegExp;
 
   /** 必须为email格式 */
   email?: boolean;
