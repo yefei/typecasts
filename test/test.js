@@ -8,7 +8,7 @@ describe('test', function() {
     const v = typeCastPick(inputData, [
       'a',
       { b: 'bool', c: 'trim' },
-      { d: 'int[]', e: 'date', f: 'date' }
+      { d: 'int[]', e: 'date', f2: 'date' }
     ]);
     assert.deepStrictEqual(v, {
       a: 1,
@@ -26,7 +26,7 @@ describe('test', function() {
         type: 'string',
         as: 'CCC',
       } },
-      { d: 'int[]', e: 'date', f: {
+      { d: 'int[]', e: 'date', f2: {
         type: 'date',
         default: '123456',
       } }
@@ -37,7 +37,7 @@ describe('test', function() {
       CCC: 'str  ',
       d: [ 1, 2, 3, 4 ],
       e: new Date('2021-5-13 13:11:22'),
-      f: '123456',
+      f2: '123456',
     });
   });
 
@@ -53,6 +53,11 @@ describe('test', function() {
     assert.throws(() => {
       typeCastPick(inputData, [{
         a: { validate: { gt: 100 } }
+      }]);
+    }, ValidateError);
+    assert.throws(() => {
+      typeCastPick(inputData, [{
+        f: 'date'
       }]);
     }, ValidateError);
   });

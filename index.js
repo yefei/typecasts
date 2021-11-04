@@ -68,35 +68,42 @@ function typeCast(value, type, splitter) {
 
 function typeCastAs(data, type, key) {
   let as = key;
-  let defaultValue;
   let splitter;
   let required = false;
   let validate;
+  let value;
+
   if (typeof type === 'object') {
     if (type.as) as = type.as;
-    if (type.default) defaultValue = type.default;
+    if (type.default) value = type.default;
     if (type.splitter) splitter = type.splitter;
     if (type.required) required = type.required;
     if (type.validate) validate = type.validate;
     type = type.type || 'origin';
   }
-  let value = typeCast(data, type, splitter);
-  if (value !== undefined) {
-    if (validate) {
-      Object.keys(validate).map(name => {
-        if (validateMap[name] === undefined) {
-          throw new TypeError(`Unknown validate: '${key}' => ${name}`);
-        }
-        if (!validateMap[name](value, validate[name])) {
-          throw new ValidateError(key, name, value, validate[name]);
-        }
-      });
-    }
-  }
-  else if (defaultValue !== undefined) value = defaultValue;
-  else if (required) {
+
+  if (required && data === undefined) {
     throw new RequiredError(key, required);
   }
+
+  if (data !== undefined) {
+    value = typeCast(data, type, splitter);
+    if (value !== undefined) {
+      if (validate) {
+        Object.keys(validate).map(name => {
+          if (validateMap[name] === undefined) {
+            throw new TypeError(`Unknown validate: '${key}' => ${name}`);
+          }
+          if (!validateMap[name](value, validate[name])) {
+            throw new ValidateError(key, name, value, validate[name]);
+          }
+        });
+      }
+    } else {
+      throw new ValidateError(key, 'cast', data, type);
+    }
+  }
+
   return [as, value];
 }
 
