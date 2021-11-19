@@ -94,8 +94,10 @@ function typeCastAs(data, type, key) {
           if (validateMap[name] === undefined) {
             throw new TypeError(`Unknown validate: '${key}' => ${name}`);
           }
-          if (!validateMap[name](value, validate[name])) {
-            throw new ValidateError(key, name, value, validate[name]);
+          for (const v of Array.isArray(value) ? value : [value]) {
+            if (!validateMap[name](v, validate[name])) {
+              throw new ValidateError(key, name, v, validate[name]);
+            }
           }
         });
       }

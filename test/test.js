@@ -79,5 +79,8 @@ describe('test', function() {
         url: { validate: { url: ['ftp'] } }
       }]);
     }, ValidateError);
+    typeCastPick(inputData, [{
+      url: { type: 'trim[]', validate: { url: true } }
+    }]);
   });
 });
