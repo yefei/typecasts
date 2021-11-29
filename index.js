@@ -101,7 +101,7 @@ function typeCastAs(data, type, key) {
           }
         });
       }
-    } else {
+    } else if (required) {
       throw new ValidateError(key, 'cast', data, type);
     }
   }
