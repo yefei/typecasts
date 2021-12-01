@@ -1,14 +1,24 @@
 const assert = require('assert');
 const { typeCastPick, RequiredError, ValidateError } = require('..');
 
-const inputData = { a: 1, b: 't', c: 'str  ', d: '1,2,3,4', e: '2021-5-13 13:11:22', f: 'Invalid Date', url: 'http://test' };
+const inputData = {
+  a: 1,
+  b: 't',
+  c: 'str  ',
+  d: '1,2,3,4',
+  e: '2021-5-13 13:11:22',
+  f: 'Invalid Date',
+  url: 'http://test',
+  big: 111122223333444455556666777788889999n,
+};
 
 describe('test', function() {
   it('typeCastPick', function() {
     const v = typeCastPick(inputData, [
       'a',
       { b: 'bool', c: 'trim' },
-      { d: 'int[]', e: 'date', f2: 'date' }
+      { d: 'int[]', e: 'date', f2: 'date' },
+      { big: 'string' },
     ]);
     assert.deepStrictEqual(v, {
       a: 1,
@@ -16,6 +26,7 @@ describe('test', function() {
       c: 'str',
       d: [ 1, 2, 3, 4 ],
       e: new Date('2021-5-13 13:11:22'),
+      big: '111122223333444455556666777788889999',
     });
   });
 
@@ -57,7 +68,10 @@ describe('test', function() {
     }, ValidateError);
     assert.throws(() => {
       typeCastPick(inputData, [{
-        f: 'date'
+        f: {
+          type: 'date',
+          required: true,
+        }
       }]);
     }, ValidateError);
   });

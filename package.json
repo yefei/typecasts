@@ -8,6 +8,10 @@
     "lint": "eslint --max-warnings 0",
     "test": "mocha"
   },
+  "files": [
+    "lib",
+    "index.d.ts"
+  ],
   "devDependencies": {
     "mocha": "^8.4.0"
   }
