@@ -1,6 +1,7 @@
 
 // 内置支持转换类型
-export type castType = 'number' | 'int' | 'float' | 'bool' | 'trim' | 'date' | 'string' | 'origin';
+export type castType = 'number' | 'int' | 'float' | 'bool' | 'trim' | 'date' | 'string' | 'origin'
+  | 'number[]' | 'int[]' | 'float[]' | 'bool[]' | 'trim[]' | 'date[]' | 'string[]' | 'origin[]';
 
 // 自定义转换函数
 export type castTypeFunc = (value: any) => any;
