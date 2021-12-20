@@ -83,12 +83,12 @@ export declare function typeCastAs(value: any, type: castType | castTypeFunc | c
 export declare function typeCastPick(input: { [key: string]: any }, fields: castFields[]): { [as: string]: any };
 
 export declare class RequiredError extends Error {
-  filed: string;
-};
+  field: string;
+}
 
 export declare class ValidateError extends Error {
   field: string;
   value: any;
   validate: string;
   target: any;
-};
+}
