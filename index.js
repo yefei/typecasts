@@ -32,16 +32,6 @@ class ValidateError extends Error {
  */
 function typeCast(value, type, splitter) {
   if (typeof type === 'string') {
-    // number[] 不指定分隔符默认使用 ,
-    // number[,]
-    const leftI = type.indexOf('[');
-    if (leftI > 0) {
-      const rightI = type.indexOf(']');
-      if (rightI > leftI) {
-        splitter = type.substring(leftI+1, rightI) || ',';
-        type = type.substring(0, leftI);
-      }
-    }
     if (typeCastMap[type] === undefined) {
       throw new TypeError('Unknown type cast: ' + type);
     }
@@ -69,6 +59,8 @@ function typeCast(value, type, splitter) {
 function typeCastAs(data, type, key) {
   let as = key;
   let splitter;
+  let maxItems;
+  let minItems;
   let required = false;
   let validate;
   let value;
@@ -77,9 +69,26 @@ function typeCastAs(data, type, key) {
     if (type.as) as = type.as;
     if (type.default) value = type.default;
     if (type.splitter) splitter = type.splitter;
+    if (type.maxItems) maxItems = type.maxItems;
+    if (type.minItems) minItems = type.minItems;
     if (type.required) required = type.required;
     if (type.validate) validate = type.validate;
     type = type.type || 'origin';
+  }
+
+  if (typeof type === 'string') {
+    // number[] 不指定分隔符默认使用 ,
+    // number[,]
+    const leftI = type.indexOf('[');
+    if (leftI > 0) {
+      const rightI = type.indexOf(']');
+      if (rightI > leftI) {
+        if (!splitter) {
+          splitter = type.substring(leftI+1, rightI) || ',';
+        }
+        type = type.substring(0, leftI);
+      }
+    }
   }
 
   if (required && data === undefined) {
@@ -89,6 +98,14 @@ function typeCastAs(data, type, key) {
   if (data !== undefined) {
     value = typeCast(data, type, splitter);
     if (value !== undefined) {
+      if (Array.isArray(value)) {
+        if (maxItems && value.length > maxItems) {
+          throw new ValidateError(key, 'maxItems', value.length, maxItems);
+        }
+        if (minItems && value.length < minItems) {
+          throw new ValidateError(key, 'minItems', value.length, minItems);
+        }
+      }
       if (validate) {
         Object.keys(validate).map(name => {
           if (validateMap[name] === undefined) {

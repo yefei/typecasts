@@ -63,6 +63,12 @@ export type castTypeOption = {
   /** 分割为数组 */
   splitter?: string;
 
+  /** 分割数组后最少项目数 */
+  minItems?: number;
+
+  /** 分割数组后最大项目数 */
+  maxItems?: number;
+
   /** 是否为必须项 */
   required?: boolean | string;
 

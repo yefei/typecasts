@@ -17,7 +17,7 @@ describe('test', function() {
     const v = typeCastPick(inputData, [
       'a',
       { b: 'bool', c: 'trim' },
-      { d: 'int[]', e: 'date', f2: 'date' },
+      { d: { type: 'int[]', minItems: 1 }, e: 'date', f2: 'date' },
       { big: 'string' },
     ]);
     assert.deepStrictEqual(v, {
