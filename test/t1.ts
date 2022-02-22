@@ -4,7 +4,7 @@ import { typeCastPick } from "../src";
 //   a: { type: 'origin', validate: { gt: 100 } }
 // });
 
-typeCastPick({ f: 'asasas' }, {
+const o = typeCastPick({ f: 'asasas' }, {
   f: {
     type: 'date',
     required: true,

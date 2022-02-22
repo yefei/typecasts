@@ -140,10 +140,12 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
   return out;
 }
 
+export type TypeCastPickOption = { [field: string]: CastOption | TypeKeys };
+
 /**
  * 挑选输入值并进行类型转换
  */
-export function typeCastPick<O extends { [field: string]: CastOption | TypeKeys }>(input: any, fieldOpts: O) {
+export function typeCastPick<O extends TypeCastPickOption>(input: any, fieldOpts: O) {
   const out: { [field: string]: any } = {};
   if (typeof input !== "object") {
     input = {};
