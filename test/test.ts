@@ -1,5 +1,5 @@
-const assert = require('assert');
-const { typeCastPick, RequiredError, ValidateError } = require('..');
+import assert from 'assert';
+import { typeCastPick, RequiredError, ValidateError } from '../src';
 
 const inputData = {
   a: 1,

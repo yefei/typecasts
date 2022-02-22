@@ -5,12 +5,17 @@
   "author": "YeFei",
   "license": "MIT",
   "scripts": {
+    "prepublishOnly": "rimraf dist && tsc",
     "test": "mocha"
   },
   "files": [
     "dist"
   ],
   "devDependencies": {
-    "mocha": "^8.4.0"
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^12",
+    "mocha": "^8.4.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.5.5"
   }
 }

@@ -1,37 +1,35 @@
-'use strict';
-
-function string(value) {
+function string(value:any) {
   if (['string', 'number', 'bigint'].includes(typeof value)) {
     return String(value);
   }
   return '';
 }
 
-module.exports = {
-  number(value) {
+export default {
+  number(value:any): number {
     value = Number(value);
     if (!isNaN(value)) return value;
   },
-  int(value) {
+  int(value:any): number {
     value = parseInt(value);
     if (!isNaN(value)) return value;
   },
-  float(value) {
+  float(value:any): number {
     value = parseFloat(value);
     if (!isNaN(value)) return value;
   },
-  bool(value) {
+  bool(value:any): boolean {
     value = String(value).toLowerCase();
     return ['y', '1', 'yes', 'on', 'true'].indexOf(value) !== -1;
   },
-  trim(value) {
+  trim(value:any): string {
     return string(value).trim();
   },
   string,
-  origin(value) {
+  origin(value:any) {
     return value;
   },
-  date(value) {
+  date(value:any): Date {
     if (value) {
       value = new Date(value);
       if (value.getTime()) return value;

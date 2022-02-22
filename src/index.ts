@@ -1,18 +1,23 @@
-'use strict';
 
-const typeCastMap = require('./lib/types');
 const validateMap = require('./lib/validates');
 
-class RequiredError extends Error {
-  constructor(field, message) {
+import typeCastMap from './types';
+
+export class RequiredError extends Error {
+  field: string;
+  constructor(field:string, message?:string) {
     super(typeof message === 'string' ? message : `The field '${field}' is required`);
     this.name = 'RequiredError';
     this.field = field;
   }
 }
 
-class ValidateError extends Error {
-  constructor(field, validate, value, target) {
+export class ValidateError extends Error {
+  field: string;
+  value: any;
+  validate: string;
+  target: any;
+  constructor(field:string, validate:string, value:any, target:any) {
     super(`The field '${field}': ${value} ${validate} ${target}`);
     this.name = 'ValidateError';
     this.field = field;
@@ -22,27 +27,51 @@ class ValidateError extends Error {
   }
 }
 
+type Types = keyof typeof typeCastMap;
+
+interface CastOption {
+  /**
+   * 目标类型，可以是 typeCastMap 里预定义的，也可自己传转换函数
+   * @default "origin"
+   * */
+  type?: Types;
+
+  /** 默认值 */
+  default?: any;
+
+  /** 分割为数组 */
+  splitter?: string;
+
+  /** 分割数组后最少项目数 */
+  minItems?: number;
+
+  /** 分割数组后最大项目数 */
+  maxItems?: number;
+
+  /** 是否为必须项 */
+  required?: boolean | string;
+
+  /** 结果验证 */
+  // validate?: Validates;
+};
+
 /**
  * 类型转换
  * type 如果为字符串则使用 typeCastMap 中预定义的类型转换。
  * 使用 type[splitter] 表达式将结果转换为指定类型的列表，不指定 splitter 则默认使用英文逗号,
- * @param {*} value 需要被转换的值
- * @param {string|(value: *) => *} type 转换类型，可以是 typeCastMap 里预定义的，也可自己传转换函数
- * @param {string} [splitter] 列表分隔符，如果没有则为单数据转换
+ * @param value 需要被转换的值
  */
-function typeCast(value, type, splitter) {
-  if (typeof type === 'string') {
-    if (typeCastMap[type] === undefined) {
-      throw new TypeError('Unknown type cast: ' + type);
-    }
-    type = typeCastMap[type];
+export function typeCast(value:any, opt:CastOption) {
+  if (opt.type in typeCastMap) {
+    var cast = typeCastMap[opt.type];
+  } else {
+    throw new TypeError('Unknown type cast: ' + opt.type);
   }
 
-  if (splitter) {
-    /** @type {*[]} */
+  if (opt.splitter) {
     let list;
     if (typeof value === 'string') {
-      list = value.split(splitter);
+      list = value.split(opt.splitter);
     } else if (Array.isArray(value)) {
       list = value;
     } else if (value && value[Symbol.iterator]) {
@@ -50,13 +79,28 @@ function typeCast(value, type, splitter) {
     } else {
       list = [value];
     }
-    return list.map(type).filter(v => v !== undefined);
+    // return list.map(cast).filter(v => v !== undefined);
   }
-
-  return type(value);
+  return cast(value) as Extract<Types, keyof typeof typeCastMap>;
 }
 
-function typeCastAs(data, type, key) {
+const a = typeCast(111, {
+  type: 'bool',
+});
+
+
+function pickTypes<T extends { [field: string]: CastOption }>(config: T) {
+  const map = {} as any;
+  return map as { [K in keyof T]: ReturnType<typeof typeCastMap[config[K].type]> };
+}
+
+const b = pickTypes({
+  ddd: {
+    type: 'bool',
+  }
+});
+
+export function typeCastAs(data, type, key) {
   let as = key;
   let splitter;
   let maxItems;
@@ -131,7 +175,7 @@ function typeCastAs(data, type, key) {
  * @param {{[field: string]: any}} input
  * @param {*[]} fields
  */
-function typeCastPick(input, fields) {
+export function typeCastPick(input, fields) {
   const out = {};
   fields.forEach(field => {
     if (typeof field === 'object') {
@@ -146,11 +190,3 @@ function typeCastPick(input, fields) {
   });
   return out;
 }
-
-module.exports = {
-  typeCast,
-  typeCastAs,
-  typeCastPick,
-  RequiredError,
-  ValidateError,
-};
