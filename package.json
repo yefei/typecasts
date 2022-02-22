@@ -5,12 +5,10 @@
   "author": "YeFei",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint --max-warnings 0",
     "test": "mocha"
   },
   "files": [
-    "lib",
-    "index.d.ts"
+    "dist"
   ],
   "devDependencies": {
     "mocha": "^8.4.0"
