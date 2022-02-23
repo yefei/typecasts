@@ -91,11 +91,12 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
     }
     return null;
   }
+
   if (value === undefined) {
-    if (opt.required && opt.default === undefined) {
-      throw new RequiredError(fieldName, opt.required);
-    }
     if (opt.default === undefined) {
+      if (opt.required) {
+        throw new RequiredError(fieldName, opt.required);
+      }
       return;
     }
     value = opt.default;
