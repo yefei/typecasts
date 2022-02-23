@@ -157,5 +157,5 @@ export function typeCastPick<O extends TypeCastPickOption>(input: any, fieldOpts
       out[fieldName] = value;
     }
   }
-  return out as { [K in keyof typeof fieldOpts]: O[K] extends CastOption ? GetReturnType<O[K]> : O[K] extends TypeKeys ? TypeMap[O[K]] : never };
+  return out as { [K in keyof O]: O[K] extends CastOption ? GetReturnType<O[K]> : O[K] extends TypeKeys ? TypeMap[O[K]] : never };
 }
