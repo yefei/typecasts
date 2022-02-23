@@ -26,7 +26,7 @@ export default {
     if (v) return v.trim();
   },
   string,
-  origin(value:any) {
+  any(value:any) {
     return value;
   },
   date(value:any): Date {

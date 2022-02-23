@@ -15,7 +15,7 @@ const inputData = {
 describe('test', function() {
   it('typeCastPick', function() {
     const v = typeCastPick(inputData, {
-      a: 'origin',
+      a: 'any',
       b: 'bool',
       c: 'trim',
       d: { type: 'int', splitter: ',', minItems: 1 },
@@ -36,7 +36,7 @@ describe('test', function() {
   it('typeCastPickOption(required)', function() {
     assert.throws(() => {
       typeCastPick(inputData, {
-        miss: { type: 'origin', required: true },
+        miss: { type: 'any', required: true },
       });
     }, RequiredError);
   });
@@ -44,7 +44,7 @@ describe('test', function() {
   it('typeCastPickOption(validate)', function() {
     assert.throws(() => {
       typeCastPick(inputData, {
-        a: { type: 'origin', validate: { gt: 100 } }
+        a: { type: 'any', validate: { gt: 100 } }
       });
     }, ValidateError);
     assert.throws(() => {
