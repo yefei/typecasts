@@ -98,14 +98,12 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
     value = opt.default;
   }
 
-  if (opt.type in typeCastMap) {
-    var cast = typeCastMap[opt.type];
-  } else {
-    throw new TypeError('Unknown type cast: ' + opt.type);
+  if (!(opt.type in typeCastMap)) {
+    throw new TypeError('Unknown cast type: ' + opt.type);
   }
 
   function doCast(value:any) {
-    const out = cast(value);
+    const out = typeCastMap[opt.type](value);
     // 是否转换成功
     if (out === undefined) {
       throw new ValidateError(fieldName, 'cast', value, opt.type);
