@@ -50,13 +50,13 @@ describe('test', function() {
 
   it('nullable', function() {
     assert.deepStrictEqual(typeCastPick(inputData, {
-      h: { type: 'string', nullable: true },
+      h: 'string',
     }), {
       h: null,
     });
     assert.throws(() => {
       typeCastPick(inputData, {
-        h: 'string',
+        h: { type: 'string', notNull: true },
       });
     }, ValidateError);
   });
