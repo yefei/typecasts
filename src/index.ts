@@ -79,9 +79,12 @@ export class ValidateError extends Error {
  * @param value 需要被转换的值
  */
 export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any, opt: O, fieldName = 'unknown'): T {
-  if (typeof value === "undefined") {
-    if (opt.required && typeof opt.default === "undefined") {
+  if (value === undefined) {
+    if (opt.required && opt.default === undefined) {
       throw new RequiredError(fieldName, opt.required);
+    }
+    if (opt.default === undefined) {
+      return;
     }
     value = opt.default;
   }
@@ -120,7 +123,7 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
   }
 
   // 是否转换成功
-  if (opt.required && typeof out === "undefined") {
+  if (opt.required && out === undefined) {
     throw new ValidateError(fieldName, 'cast', value, opt.type);
   }
 
@@ -154,7 +157,7 @@ export function typeCastPick<O extends TypeCastPickOption>(input: any, fieldOpts
   for (const fieldName of Object.keys(fieldOpts)) {
     const opt = fieldOpts[fieldName];
     const value = typeCast(input[fieldName], typeof opt === "string" ? { type: opt } : opt , fieldName);
-    if (typeof value !== "undefined") {
+    if (value !== undefined) {
       out[fieldName] = value;
     }
   }

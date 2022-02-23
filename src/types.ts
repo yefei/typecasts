@@ -2,7 +2,6 @@ function string(value:any) {
   if (['string', 'number', 'bigint'].includes(typeof value)) {
     return String(value);
   }
-  return '';
 }
 
 export default {
@@ -23,7 +22,8 @@ export default {
     return ['y', '1', 'yes', 'on', 'true'].indexOf(value) !== -1;
   },
   trim(value:any): string {
-    return string(value).trim();
+    const v = string(value);
+    if (v) return v.trim();
   },
   string,
   origin(value:any) {
