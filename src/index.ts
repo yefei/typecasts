@@ -95,6 +95,26 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
     throw new TypeError('Unknown type cast: ' + opt.type);
   }
 
+  function doCast(value:any) {
+    const out = cast(value);
+    // 是否转换成功
+    if (out === undefined) {
+      throw new ValidateError(fieldName, 'cast', value, opt.type);
+    }
+    // 结果验证
+    if (opt.validate) {
+      for (const valid of <ValidateKeys[]>Object.keys(opt.validate)) {
+        if (!(valid in validateMap)) {
+          throw new TypeError(`Unknown validate: ${valid} for ${fieldName}`);
+        }
+        if (!validateMap[valid](opt.validate[valid])(out)) {
+          throw new ValidateError(fieldName, valid, out, opt.validate[valid]);
+        }
+      }
+    }
+    return out;
+  }
+
   let out: any;
 
   if (opt.splitter) {
@@ -117,28 +137,9 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
       throw new ValidateError(fieldName, 'minItems', value.length, opt.minItems);
     }
 
-    out = list.map(cast).filter(v => v !== undefined);
+    out = list.map(doCast);
   } else {
-    out = cast(value);
-  }
-
-  // 是否转换成功
-  if (opt.required && out === undefined) {
-    throw new ValidateError(fieldName, 'cast', value, opt.type);
-  }
-
-  // 结果验证
-  if (opt.validate) {
-    for (const valid of <ValidateKeys[]>Object.keys(opt.validate)) {
-      if (!(valid in validateMap)) {
-        throw new TypeError(`Unknown validate: ${valid} for ${fieldName}`);
-      }
-      for (const v of Array.isArray(value) ? value : [value]) {
-        if (!validateMap[valid](opt.validate[valid])(v)) {
-          throw new ValidateError(fieldName, valid, v, opt.validate[valid]);
-        }
-      }
-    }
+    out = doCast(value);
   }
 
   return out;
