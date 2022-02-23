@@ -44,6 +44,12 @@ export interface CastOption {
   /** 是否为必须项 */
   required?: boolean | string;
 
+  /**
+   * 是否允许 null 值
+   * @default false
+   */
+  nullable?: boolean;
+
   /** 结果验证 */
   validate?: ValidateOption;
 };
@@ -79,6 +85,9 @@ export class ValidateError extends Error {
  * @param value 需要被转换的值
  */
 export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any, opt: O, fieldName = 'unknown'): T {
+  if (value === null && opt.nullable) {
+    return null;
+  }
   if (value === undefined) {
     if (opt.required && opt.default === undefined) {
       throw new RequiredError(fieldName, opt.required);

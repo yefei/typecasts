@@ -9,6 +9,7 @@ const inputData = {
   e: '2021-5-13 13:11:22',
   f: 'Invalid Date',
   g: '',
+  h: null,
   url: 'http://test',
   big: 111122223333444455556666777788889999n,
 };
@@ -45,6 +46,19 @@ describe('test', function() {
     }), {
       g: '',
     });
+  });
+
+  it('nullable', function() {
+    assert.deepStrictEqual(typeCastPick(inputData, {
+      h: { type: 'string', nullable: true },
+    }), {
+      h: null,
+    });
+    assert.throws(() => {
+      typeCastPick(inputData, {
+        h: 'string',
+      });
+    }, ValidateError);
   });
 
   it('typeCastPickOption(required)', function() {
