@@ -21,6 +21,7 @@ export type GetReturnType<O extends CastOption> = O["splitter"] extends string ?
  */
 export type ValidateKeys = keyof typeof validateMap;
 export type ValidateValues = { [K in ValidateKeys]: Parameters<typeof validateMap[K]>[0] };
+export type ValidateOption = { [K in ValidateKeys]?: ValidateValues[K] };
 
 export interface CastOption {
   /**
@@ -44,7 +45,7 @@ export interface CastOption {
   required?: boolean | string;
 
   /** 结果验证 */
-  validate?: { [K in ValidateKeys]?: ValidateValues[K] };
+  validate?: ValidateOption;
 };
 
 export class RequiredError extends Error {
