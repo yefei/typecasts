@@ -23,7 +23,7 @@ export default {
   },
   trim(value:any): string {
     const v = string(value);
-    if (v) return v.trim();
+    if (v !== undefined) return v.trim();
   },
   string,
   any(value:any) {

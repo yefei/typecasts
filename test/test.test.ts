@@ -8,6 +8,7 @@ const inputData = {
   d: '1,2,3,4',
   e: '2021-5-13 13:11:22',
   f: 'Invalid Date',
+  g: '',
   url: 'http://test',
   big: 111122223333444455556666777788889999n,
 };
@@ -30,6 +31,19 @@ describe('test', function() {
       d: [ 1, 2, 3, 4 ],
       e: new Date('2021-5-13 13:11:22'),
       big: '111122223333444455556666777788889999',
+    });
+  });
+
+  it('typeCastPick(empty string)', function() {
+    assert.deepStrictEqual(typeCastPick(inputData, {
+      g: 'trim',
+    }), {
+      g: '',
+    });
+    assert.deepStrictEqual(typeCastPick(inputData, {
+      g: 'string',
+    }), {
+      g: '',
     });
   });
 
