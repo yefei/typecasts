@@ -106,4 +106,18 @@ describe('test', function() {
       url: { type: 'trim', splitter: '|', validate: { url: true } }
     });
   });
+
+  it("Strict", function(){
+    const v = typeCastPick(inputData, {
+      a: '!int',
+    });
+    assert.deepStrictEqual(v, { a: 1 });
+  });
+  it("Strict ValidateError", function(){
+    assert.throws(() => {
+      typeCastPick(inputData, {
+        b: '!int',
+      });
+    }, ValidateError);
+  });
 });

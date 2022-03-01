@@ -2,14 +2,29 @@ import typeCastMap from './types';
 import validateMap from './validates';
 
 /**
+ * 支持的类型
+ */
+type Types =typeof typeCastMap;
+type Keys = keyof Types;
+type Returns = { [K in Keys]: ReturnType<Types[K]> };
+
+/**
+ * 严格模式
+ * required: true
+ * notNull: true
+ */
+type StrictReturns = { [K in Keys as `!${K}`]: Returns[K] };
+type StrictKeys = keyof StrictReturns;
+
+/**
  * 所有支持的转换类型名称
  */
-export type TypeKeys = keyof typeof typeCastMap;
+export type TypeKeys = Keys | StrictKeys;
 
 /**
  * 类型名称对应的类型
  */
-export type TypeMap = { [K in TypeKeys]: ReturnType<typeof typeCastMap[K]> };
+export type TypeMap = Returns & StrictReturns;
 
 /**
  * 获取单项的返回类型
@@ -84,7 +99,25 @@ export class ValidateError extends Error {
  * 使用 type[splitter] 表达式将结果转换为指定类型的列表，不指定 splitter 则默认使用英文逗号,
  * @param value 需要被转换的值
  */
-export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any, opt: O, fieldName = 'unknown'): T {
+export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any, option: O, fieldName = 'unknown'): T {
+  const opt = Object.assign({}, option);
+  if (!opt.type) {
+    throw new TypeError('type is required');
+  }
+
+  // 更新配置
+  const update = {} as CastOption;
+
+  // 严格模式
+  if (opt.type.startsWith('!')) {
+    opt.type = <TypeKeys> opt.type.slice(1);
+    update.required = true;
+    update.notNull = true;
+  }
+
+  // 应用更新配置，不覆盖原始配置
+  Object.assign(opt, update, opt);
+
   if (value === null) {
     if (opt.notNull) {
       throw new ValidateError(fieldName, 'notNull', value, opt.type);
@@ -107,7 +140,7 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
   }
 
   function doCast(value:any) {
-    const out = typeCastMap[opt.type](value);
+    const out = typeCastMap[<Keys>opt.type](value);
     // 是否转换成功
     if (out === undefined) {
       throw new ValidateError(fieldName, 'cast', value, opt.type);
