@@ -17,14 +17,21 @@ type StrictReturns = { [K in Keys as `!${K}`]: Returns[K] };
 type StrictKeys = keyof StrictReturns;
 
 /**
+ * 数组模式
+ * splitter: ','
+ */
+type ArrayReturns = { [K in Keys as `${K}[]`]: Returns[K][] };
+type ArrayKeys = keyof ArrayReturns;
+
+/**
  * 所有支持的转换类型名称
  */
-export type TypeKeys = Keys | StrictKeys;
+export type TypeKeys = Keys | StrictKeys | ArrayKeys;
 
 /**
  * 类型名称对应的类型
  */
-export type TypeMap = Returns & StrictReturns;
+export type TypeMap = Returns & StrictReturns & ArrayReturns;
 
 /**
  * 获取单项的返回类型
@@ -113,6 +120,12 @@ export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any,
     opt.type = <TypeKeys> opt.type.slice(1);
     update.required = true;
     update.notNull = true;
+  }
+
+  // 数组模式
+  if (opt.type.endsWith('[]')) {
+    opt.type = <TypeKeys> opt.type.slice(0, -2);
+    update.splitter = ',';
   }
 
   // 应用更新配置，不覆盖原始配置

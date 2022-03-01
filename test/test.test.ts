@@ -120,4 +120,11 @@ describe('test', function() {
       });
     }, ValidateError);
   });
+
+  it("Array", function(){
+    const v = typeCastPick(inputData, {
+      d: 'int[]',
+    });
+    assert.deepStrictEqual(v, { d: [1,2,3,4] });
+  });
 });
