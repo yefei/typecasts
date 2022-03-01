@@ -127,4 +127,18 @@ describe('test', function() {
     });
     assert.deepStrictEqual(v, { d: [1,2,3,4] });
   });
+
+  it("StrictArray", function(){
+    const v = typeCastPick(inputData, {
+      d: '!int[]',
+    });
+    assert.deepStrictEqual(v, { d: [1,2,3,4] });
+  });
+  it("StrictArray ValidateError", function(){
+    assert.throws(() => {
+      typeCastPick(inputData, {
+        b: '!int[]',
+      });
+    }, ValidateError);
+  });
 });

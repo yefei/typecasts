@@ -24,14 +24,23 @@ type ArrayReturns = { [K in Keys as `${K}[]`]: Returns[K][] };
 type ArrayKeys = keyof ArrayReturns;
 
 /**
+ * 严格数组模式
+ * required: true
+ * notNull: true
+ * splitter: ','
+ */
+type StrictArrayReturns = { [K in Keys as `!${K}[]`]: Returns[K][] };
+type StrictArrayKeys = keyof StrictArrayReturns;
+
+/**
  * 所有支持的转换类型名称
  */
-export type TypeKeys = Keys | StrictKeys | ArrayKeys;
+export type TypeKeys = Keys | StrictKeys | ArrayKeys | StrictArrayKeys;
 
 /**
  * 类型名称对应的类型
  */
-export type TypeMap = Returns & StrictReturns & ArrayReturns;
+export type TypeMap = Returns & StrictReturns & ArrayReturns & StrictArrayReturns;
 
 /**
  * 获取单项的返回类型
