@@ -47,6 +47,8 @@ const v = typeCastPick(inputData, {
     // 数据验证规则
     validate: {
       url: true, // 验证是否符合链接格式
+      maxLength: 500, // 字符串长度不能超过 500
+      // 更多规则参照下表 “支持的数据验证”
     },
   }
 });
@@ -92,7 +94,7 @@ console.log(v);
 ```
 
 ## 支持的转换类型
-| 类型名称 | 目标类型 ｜ 功能描述 |
+| 类型名 | 目标类型 | 功能描述 |
 | ------- | ------- | ------- |
 | number  | `number`  | 任何数值类型，整数、浮点 |
 | int  | `number`  | 转换为整数类型 |
@@ -104,7 +106,7 @@ console.log(v);
 | date  | `Date`  | 转换为日期类型 |
 
 ## 支持的数据验证
-| 验证器名称 | 功能描述 | 参数 ｜
+| 验证名 | 功能描述 | 参数 |
 | ------- | ------- | ------- |
 | lt | 小于 < | `any` |
 | lte | 小于等于 <= | `any` |
@@ -116,7 +118,7 @@ console.log(v);
 | minLength | 最小长度，调用值的 .length 属性 | `number` |
 | in | 只能出现的值 | `any[]` |
 | notIn | 不能出现的值 | `any[]` |
-| regexp | 正则表达式匹配 | `string | RegExp` |
+| regexp | 正则表达式匹配 | `string \| RegExp` |
 | email | 是否满足Email地址规则 | `boolean` |
 | slug | 是否满足URL路径规则 | `boolean` |
-| url | 是否满足 URL 规则 | `string[] | boolean` |
+| url | 是否满足 URL 规则 | `string[] \| boolean` |
