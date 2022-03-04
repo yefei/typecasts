@@ -57,7 +57,7 @@ export type ValidateOption = { [K in ValidateKeys]?: ValidateValues[K] };
 export interface CastOption {
   /**
    * 目标类型
-   * */
+   */
   type: TypeKeys;
 
   /** 默认值 */
@@ -115,8 +115,8 @@ export class ValidateError extends Error {
  * 使用 type[splitter] 表达式将结果转换为指定类型的列表，不指定 splitter 则默认使用英文逗号,
  * @param value 需要被转换的值
  */
-export function typeCast<O extends CastOption, T = GetReturnType<O>>(value: any, option: O, fieldName = 'unknown'): T {
-  const opt = Object.assign({}, option);
+export function typeCast<O extends CastOption>(value: any, option: O, fieldName = 'unknown'): GetReturnType<O> {
+  const opt = Object.assign({}, option) as CastOption;
   if (!opt.type) {
     throw new TypeError('type is required');
   }
