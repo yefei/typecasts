@@ -165,6 +165,7 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
     const out = typeCastMap[<Keys>opt.type](value);
     // 是否转换成功
     if (out === undefined) {
+      if (!opt.required) return;
       throw new ValidateError(fieldName, 'cast', value, opt.type);
     }
     // 结果验证
