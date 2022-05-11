@@ -204,7 +204,7 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
       throw new ValidateError(fieldName, 'minItems', value.length, opt.minItems);
     }
 
-    out = list.map(doCast);
+    out = list.map(doCast).filter(i => i !== undefined);
   } else {
     out = doCast(value);
   }

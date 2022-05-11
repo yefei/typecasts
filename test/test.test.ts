@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { typeCastPick, RequiredError, ValidateError } from '../src';
+import { typeCastPick, RequiredError, ValidateError, typeCast } from '../src';
 
 const inputData = {
   a: 1,
@@ -140,5 +140,10 @@ describe('test', function() {
         b: '!int[]',
       });
     }, ValidateError);
+  });
+
+  it("[undefined filter]", function(){
+    const v = typeCast('', { type: 'int[]' });
+    assert.deepStrictEqual(v, []);
   });
 });
