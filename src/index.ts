@@ -212,7 +212,12 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
   return out;
 }
 
-export type TypeCastPickOption = { [field: string]: CastOption | TypeKeys };
+export type TypeCastPickOption = { [field: string]: (CastOption & {
+  /**
+   * 来自 input 中的那个键，默认使用 field 键名
+   */
+  field?: string;
+}) | TypeKeys };
 
 /**
  * 挑选输入值并进行类型转换
@@ -223,8 +228,9 @@ export function typeCastPick<O extends TypeCastPickOption>(input: any, fieldOpts
     input = {};
   }
   for (const fieldName of Object.keys(fieldOpts)) {
-    const opt = fieldOpts[fieldName];
-    const value = typeCast(input[fieldName], typeof opt === "string" ? { type: opt } : opt , fieldName);
+    const o = fieldOpts[fieldName];
+    const opt = typeof o === "string" ? { type: o } : o;
+    const value = typeCast(input[opt.field || fieldName], opt, fieldName);
     if (value !== undefined) {
       out[fieldName] = value;
     }

@@ -146,4 +146,14 @@ describe('test', function() {
     const v = typeCast('', { type: 'int[]' });
     assert.deepStrictEqual(v, []);
   });
+
+  it("pick field", function(){
+    const v = typeCastPick(inputData, {
+      d: {
+        type: 'int',
+        field: 'a',
+      },
+    });
+    assert.deepStrictEqual(v, { d: 1 });
+  });
 });
