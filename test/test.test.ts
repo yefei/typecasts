@@ -9,6 +9,7 @@ const inputData = {
   e: '2021-5-13 13:11:22',
   f: 'Invalid Date',
   g: '',
+  trims: ',',
   h: null,
   url: 'http://test',
   big: 111122223333444455556666777788889999n,
@@ -38,9 +39,7 @@ describe('test', function() {
   it('typeCastPick(empty string)', function() {
     assert.deepStrictEqual(typeCastPick(inputData, {
       g: 'trim',
-    }), {
-      g: '',
-    });
+    }), {});
     assert.deepStrictEqual(typeCastPick(inputData, {
       g: 'string',
     }), {
@@ -155,5 +154,14 @@ describe('test', function() {
       },
     });
     assert.deepStrictEqual(v, { d: 1 });
+  });
+
+  it("trim[]", function(){
+    const v = typeCastPick(inputData, {
+      d: 'trim[]',
+      g: 'trim[]',
+      trims: 'trim[]',
+    });
+    assert.deepStrictEqual(v, { d: ['1','2','3','4'], g: [], trims: [] });
   });
 });

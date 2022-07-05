@@ -21,9 +21,12 @@ export default {
     value = String(value).toLowerCase();
     return ['y', '1', 'yes', 'on', 'true'].indexOf(value) !== -1;
   },
+  /** 去除字符串两端的空白字符，如果结果为空字符串则抛弃 */
   trim(value:any): string {
     const v = string(value);
-    if (v !== undefined) return v.trim();
+    if (v !== undefined && v.trim()) {
+      return v.trim();
+    }
   },
   string,
   any(value:any) {
