@@ -83,6 +83,9 @@ export interface CastOption {
 
   /** 结果验证 */
   validate?: ValidateOption;
+
+  /** 在转换之后进行过滤 */
+  filter?: (value:any) => boolean;
 };
 
 export class RequiredError extends Error {
@@ -178,6 +181,10 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
           throw new ValidateError(fieldName, valid, out, opt.validate[valid]);
         }
       }
+    }
+    // 使用自定义过滤器
+    if (opt.filter && !opt.filter(out)) {
+      return;
     }
     return out;
   }
