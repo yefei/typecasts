@@ -39,7 +39,9 @@ describe('test', function() {
   it('typeCastPick(empty string)', function() {
     assert.deepStrictEqual(typeCastPick(inputData, {
       g: 'trim',
-    }), {});
+    }), {
+      g: '',
+    });
     assert.deepStrictEqual(typeCastPick(inputData, {
       g: 'string',
     }), {
@@ -162,6 +164,6 @@ describe('test', function() {
       g: 'trim[]',
       trims: 'trim[]',
     });
-    assert.deepStrictEqual(v, { d: ['1','2','3','4'], g: [], trims: [] });
+    assert.deepStrictEqual(v, { d: ['1','2','3','4'], g: [''], trims: ['',''] });
   });
 });
