@@ -169,4 +169,13 @@ describe('test', function() {
     });
     assert.deepStrictEqual(v, { d: ['1','2','3','4'], g: [''], trims: ['2','3','5'] });
   });
+
+  it("trim2[]", function(){
+    const v = typeCastPick(inputData, {
+      d: 'trim2[]',
+      g: 'trim2[]',
+      trims: 'trim2[]',
+    });
+    assert.deepStrictEqual(v, { d: ['1','2','3','4'], g: [], trims: ['2','3','5'] });
+  });
 });

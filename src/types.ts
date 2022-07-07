@@ -25,6 +25,11 @@ export default {
     if (typeof value === 'string') return value.trim();
     return string(value);
   },
+  /** 清理两端空白字符，且清理完的结果不能为空字符串 */
+  trim2(value:any) {
+    const out = string(value);
+    if (out && out.trim()) return out.trim();
+  },
   string,
   any(value:any) {
     return value;
