@@ -4,16 +4,16 @@ import validateMap from './validates';
 /**
  * 支持的类型
  */
-type Types =typeof typeCastMap;
+type Types = typeof typeCastMap;
 type Keys = keyof Types;
-type Returns = { [K in Keys]: ReturnType<Types[K]> };
+type Returns = { [K in Keys]: ReturnType<Types[K]> | undefined | null };
 
 /**
  * 严格模式
  * required: true
  * notNull: true
  */
-type StrictReturns = { [K in Keys as `!${K}`]: Returns[K] };
+type StrictReturns = { [K in Keys as `!${K}`]: Exclude<Returns[K], undefined | null> };
 type StrictKeys = keyof StrictReturns;
 
 /**
@@ -29,7 +29,7 @@ type ArrayKeys = keyof ArrayReturns;
  * notNull: true
  * splitter: ','
  */
-type StrictArrayReturns = { [K in Keys as `!${K}[]`]: Returns[K][] };
+type StrictArrayReturns = { [K in Keys as `!${K}[]`]: Exclude<Returns[K], undefined | null>[] };
 type StrictArrayKeys = keyof StrictArrayReturns;
 
 /**
@@ -45,7 +45,14 @@ export type TypeMap = Returns & StrictReturns & ArrayReturns & StrictArrayReturn
 /**
  * 获取单项的返回类型
  */
-export type GetReturnType<O extends CastOption> = O["splitter"] extends string ? TypeMap[O["type"]][] : TypeMap[O["type"]];
+export type GetReturnType<O extends CastOption> = (
+  O["type"] extends TypeKeys ? (O["splitter"] extends string ? TypeMap[O["type"]][] : TypeMap[O["type"]]) :
+  O["type"] extends TypeCastPickOption ? {
+    [K in keyof O["type"]]:
+      O["type"][K] extends CastOption ?
+      GetReturnType<O["type"][K]> :
+      (O["type"][K] extends TypeKeys ? TypeMap[O["type"][K]] : never)
+  } : never) | null | undefined;
 
 /**
  * 支持的验证类型名称
@@ -58,7 +65,7 @@ export interface CastOption {
   /**
    * 目标类型
    */
-  type: TypeKeys;
+  type: TypeKeys | TypeCastPickOption;
 
   /** 默认值 */
   default?: any;
@@ -122,6 +129,10 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
   const opt = Object.assign({}, option) as CastOption;
   if (!opt.type) {
     throw new TypeError('type is required');
+  }
+
+  if (typeof opt.type === 'object') {
+    return <any> typeCastPick(value, opt.type);
   }
 
   // 更新配置

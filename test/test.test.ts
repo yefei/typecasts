@@ -13,6 +13,10 @@ const inputData = {
   h: null,
   url: 'http://test',
   big: 111122223333444455556666777788889999n,
+  obj: {
+    aa: 1,
+    bb: 'bb',
+  }
 };
 
 describe('test', function() {
@@ -177,5 +181,28 @@ describe('test', function() {
       trims: 'trim2[]',
     });
     assert.deepStrictEqual(v, { d: ['1','2','3','4'], g: [], trims: ['2','3','5'] });
+  });
+
+  it("object", function(){
+    const v = typeCastPick(inputData, {
+      a: '!int',
+      b: '!trim',
+      obj: {
+        type: {
+          aa: '!number',
+          bb: {
+            type: '!string',
+          }
+        },
+      },
+    });
+    assert.deepStrictEqual(v, {
+      a: 1,
+      b: 't',
+      obj: {
+        aa: 1,
+        bb: 'bb',
+      }
+    });
   });
 });

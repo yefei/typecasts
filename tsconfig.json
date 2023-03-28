@@ -3,20 +3,14 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "target": "ES2019",
-    "lib": [
-      "ES2019"
-    ],
+    "lib": [ "ES2019" ],
     "module": "commonjs",
     "strict": true,
-    "strictNullChecks": false,
-    "declaration": true,
-    "outDir": "./dist"
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "newLine": "lf",
+    "outDir": "dist"
   },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+  "include": [ "src/**/*" ]
 }
