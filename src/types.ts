@@ -1,43 +1,44 @@
-function string(value: any): string | undefined {
-  if (['string', 'number', 'bigint'].includes(typeof value)) {
-    return String(value);
-  }
-}
-
-export default {
-  number(value: any): number | undefined {
-    value = Number(value);
-    if (!isNaN(value)) return value;
+const typeCastMap = {
+  number(value: any) {
+    const out = Number(value);
+    if (!isNaN(out)) return out;
   },
-  int(value: any): number | undefined {
-    value = parseInt(value);
-    if (!isNaN(value)) return value;
+  int(value: any) {
+    const out = parseInt(value);
+    if (!isNaN(out)) return out;
   },
-  float(value: any): number | undefined {
-    value = parseFloat(value);
-    if (!isNaN(value)) return value;
+  float(value: any) {
+    const out = parseFloat(value);
+    if (!isNaN(out)) return out;
   },
-  bool(value: any): boolean {
-    value = String(value).toLowerCase();
-    return ['y', '1', 'yes', 'on', 'true'].indexOf(value) !== -1;
+  bool(value: any) {
+    const v = typeCastMap.trim(value);
+    if (!v) return false;
+    return ['y', '1', 'yes', 'on', 'true'].indexOf(v.toLowerCase()) !== -1;
   },
   trim(value: any) {
     if (typeof value === 'string') return value.trim();
-    return string(value);
+    return typeCastMap.string(value);
   },
   /** 清理两端空白字符，且清理完的结果不能为空字符串 */
   trim2(value: any) {
-    const out = string(value);
+    const out = typeCastMap.string(value);
     if (out && out.trim()) return out.trim();
   },
-  string,
+  string(value: any) {
+    if (['string', 'number', 'bigint'].includes(typeof value)) {
+      return String(value);
+    }
+  },
   any(value: any) {
     return value;
   },
-  date(value: any): Date | undefined {
+  date(value: any) {
     if (value) {
-      value = new Date(value);
-      if (value.getTime()) return value;
+      const out = new Date(value);
+      if (out.getTime()) return out;
     }
   },
 };
+
+export default typeCastMap;
