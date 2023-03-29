@@ -1,5 +1,8 @@
 # Changelog
 
+## [2.7.2] - 2023-3-28
+- 数组类型 null | undefined 标示位置错误
+
 ## [2.7.1] - 2023-3-28
 - missing: d.ts
 

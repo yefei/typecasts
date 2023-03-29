@@ -20,7 +20,7 @@ type StrictKeys = keyof StrictReturns;
  * 数组模式
  * splitter: ','
  */
-type ArrayReturns = { [K in Keys as `${K}[]`]: Returns[K][] };
+type ArrayReturns = { [K in Keys as `${K}[]`]: Exclude<Returns[K], undefined | null>[] | null | undefined };
 type ArrayKeys = keyof ArrayReturns;
 
 /**
