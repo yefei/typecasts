@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.8.0] - 2023-3-31
+- 重写大部分类型定义
+- 移除 required, notNull 选项，改为 ?type, ~type
+- splitter 参数不再作为数组类型开关，需要使用 type[]
+
 ## [2.7.2] - 2023-3-28
 - 数组类型 null | undefined 标示位置错误
 

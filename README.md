@@ -26,6 +26,10 @@ const inputData = {
   d: '1,2,3,4',
   e: '2021-5-13 13:11:22',
   f: 'http://test',
+  obj: {
+    g: 2,
+    h: 'a,b,c,d'
+  }
 };
 
 // 类型处理
@@ -42,14 +46,19 @@ const v = typeCastPick(inputData, {
     splitter: ',',        // 是否切割为数组，定义切割字符
     minItems: 1,          // 切割数组后最少需要的元素数量
     maxItems: 10,         // 切割数组后最多不能超过的元素数量
-    required: false,      // 是否为必须
-    notNull: false,       // 是否允许 null 值
     // 数据验证规则
     validate: {
       url: true, // 验证是否符合链接格式
       maxLength: 500, // 字符串长度不能超过 500
       // 更多规则参照下表 “支持的数据验证”
     },
+  },
+  obj: {
+    // 嵌套对象
+    type: {
+      g: '!int',
+      g: '~trim[]'
+    }
   }
 });
 
@@ -63,6 +72,10 @@ console.log(v);
   d: [ 1, 2, 3, 4 ],
   e: new Date('2021-5-13 13:11:22'),
   f: 'http://test',
+  obj: {
+    g: 2,
+    h: [ 'a', 'b', 'c', 'd' ]
+  }
 }
 ```
 
@@ -70,28 +83,13 @@ console.log(v);
 
 例如 `int` 类型名称，可以写成 `!int`  或者  `int[]` 或两者的组合  `!int[]`
 
-```js
-// !int 感叹号开头等于如下配置
-{
-  type: 'int',
-  required: true,
-  notNull: true,
-}
-
-// [] 结尾等于如下配置
-{
-  type: 'int',
-  splitter: ',',
-}
-
-// 两者结合 !int[]
-{
-  type: 'int',
-  required: true,
-  notNull: true,
-  splitter: ',',
-}
-```
+类型前缀规则
+| 前缀 | 可传入类型
+| --- | ---------
+| 无  | 非必填, 允许 null
+| ?   | 非必填, 不允许 null
+| ~   | 必填, 允许 null
+| !   | 必填, 不允许 null
 
 ## 支持的转换类型
 | 类型名 | 目标类型 | 功能描述 |

@@ -25,7 +25,7 @@ describe('test', function() {
       a: 'any',
       b: 'bool',
       c: 'trim',
-      d: { type: 'int', splitter: ',', minItems: 1 },
+      d: { type: 'int[]', minItems: 1 },
       e: 'date',
       f2: 'date',
       big: 'string',
@@ -61,7 +61,7 @@ describe('test', function() {
     });
     assert.throws(() => {
       typeCastPick(inputData, {
-        h: { type: 'string', notNull: true },
+        h: { type: '?string' },
       });
     }, ValidateError);
   });
@@ -69,7 +69,7 @@ describe('test', function() {
   it('typeCastPickOption(required)', function() {
     assert.throws(() => {
       typeCastPick(inputData, {
-        miss: { type: 'any', required: true },
+        miss: { type: '!any' },
       });
     }, RequiredError);
   });
@@ -83,8 +83,7 @@ describe('test', function() {
     assert.throws(() => {
       typeCastPick(inputData, {
         f: {
-          type: 'date',
-          required: true,
+          type: '!date',
         }
       });
     }, ValidateError);
@@ -108,7 +107,7 @@ describe('test', function() {
       });
     }, ValidateError);
     typeCastPick(inputData, {
-      url: { type: 'trim', splitter: '|', validate: { url: true } }
+      url: { type: 'trim[]', splitter: '|', validate: { url: true } }
     });
   });
 

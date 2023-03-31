@@ -1,104 +1,12 @@
-import typeCastMap from './types';
+import typeCastMap from './casts';
+import { CastOption, TypeKeys, CastKeys, ValidateKeys, PickOption, GetReturnType, GetPickReturnType } from './types';
 import validateMap from './validates';
-
-/**
- * 支持的类型
- */
-type Types = typeof typeCastMap;
-type Keys = keyof Types;
-type Returns = { [K in Keys]: ReturnType<Types[K]> | undefined | null };
-
-/**
- * 严格模式
- * required: true
- * notNull: true
- */
-type StrictReturns = { [K in Keys as `!${K}`]: Exclude<Returns[K], undefined | null> };
-type StrictKeys = keyof StrictReturns;
-
-/**
- * 数组模式
- * splitter: ','
- */
-type ArrayReturns = { [K in Keys as `${K}[]`]: Exclude<Returns[K], undefined | null>[] | null | undefined };
-type ArrayKeys = keyof ArrayReturns;
-
-/**
- * 严格数组模式
- * required: true
- * notNull: true
- * splitter: ','
- */
-type StrictArrayReturns = { [K in Keys as `!${K}[]`]: Exclude<Returns[K], undefined | null>[] };
-type StrictArrayKeys = keyof StrictArrayReturns;
-
-/**
- * 所有支持的转换类型名称
- */
-export type TypeKeys = Keys | StrictKeys | ArrayKeys | StrictArrayKeys;
-
-/**
- * 类型名称对应的类型
- */
-export type TypeMap = Returns & StrictReturns & ArrayReturns & StrictArrayReturns;
-
-/**
- * 获取单项的返回类型
- */
-export type GetReturnType<O extends CastOption> = (
-  O["type"] extends TypeKeys ? (O["splitter"] extends string ? TypeMap[O["type"]][] : TypeMap[O["type"]]) :
-  O["type"] extends TypeCastPickOption ? {
-    [K in keyof O["type"]]:
-      O["type"][K] extends CastOption ?
-      GetReturnType<O["type"][K]> :
-      (O["type"][K] extends TypeKeys ? TypeMap[O["type"][K]] : never)
-  } : never) | null | undefined;
-
-/**
- * 支持的验证类型名称
- */
-export type ValidateKeys = keyof typeof validateMap;
-export type ValidateValues = { [K in ValidateKeys]: Parameters<typeof validateMap[K]>[0] };
-export type ValidateOption = { [K in ValidateKeys]?: ValidateValues[K] };
-
-export interface CastOption {
-  /**
-   * 目标类型
-   */
-  type: TypeKeys | TypeCastPickOption;
-
-  /** 默认值 */
-  default?: any;
-
-  /** 分割为数组 */
-  splitter?: string;
-
-  /** 分割数组后最少项目数 */
-  minItems?: number;
-
-  /** 分割数组后最大项目数 */
-  maxItems?: number;
-
-  /** 是否为必须项 */
-  required?: boolean | string;
-
-  /**
-   * 不允许 null 值
-   * @default false
-   */
-  notNull?: boolean;
-
-  /** 结果验证 */
-  validate?: ValidateOption;
-
-  /** 在转换之后进行过滤 */
-  filter?: (value:any) => boolean;
-};
+export * from './types';
 
 export class RequiredError extends Error {
   field: string;
-  constructor(field: string, message?: string | boolean) {
-    super(typeof message === 'string' ? message : `The field '${field || 'unknown'}' is required`);
+  constructor(field: string) {
+    super(`The field '${field || 'unknown'}' is required`);
     this.name = 'RequiredError';
     this.field = field;
   }
@@ -125,7 +33,7 @@ export class ValidateError extends Error {
  * 使用 type[splitter] 表达式将结果转换为指定类型的列表，不指定 splitter 则默认使用英文逗号,
  * @param value 需要被转换的值
  */
-export function typeCast<O extends CastOption>(value: any, option: O, fieldName = 'unknown'): GetReturnType<O> {
+export function typeCast<O extends CastOption>(value: any, option: O): GetReturnType<O> {
   const opt = Object.assign({}, option) as CastOption;
   if (!opt.type) {
     throw new TypeError('type is required');
@@ -135,37 +43,51 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
     return <any> typeCastPick(value, opt.type);
   }
 
-  // 更新配置
-  const update = {} as CastOption;
+  let required = false;
+  let nullable = true;
+  let toArray = false;
 
-  // 严格模式
-  if (opt.type.startsWith('!')) {
-    opt.type = <TypeKeys> opt.type.slice(1);
-    update.required = true;
-    update.notNull = true;
+  // 模式
+  switch (opt.type[0]) {
+    case '!':
+      opt.type = <TypeKeys> opt.type.slice(1);
+      required = true;
+      nullable = false;
+      break;
+    case '~':
+      opt.type = <TypeKeys> opt.type.slice(1);
+      required = true;
+      nullable = true;
+      break;
+    case '?':
+      opt.type = <TypeKeys> opt.type.slice(1);
+      required = false;
+      nullable = false;
+      break;
   }
 
   // 数组模式
   if (opt.type.endsWith('[]')) {
     opt.type = <TypeKeys> opt.type.slice(0, -2);
-    update.splitter = ',';
+    toArray = true;
   }
 
-  // 应用更新配置，不覆盖原始配置
-  Object.assign(opt, update, opt);
+  const fieldName = option.field || 'unknown';
 
   if (value === null) {
-    if (opt.notNull) {
+    if (!nullable) {
       throw new ValidateError(fieldName, 'notNull', value, opt.type);
     }
+    // @ts-ignore 这里会根据配置选项使用 GetReturnType 决定返回类型
     return null;
   }
 
   if (value === undefined) {
     if (opt.default === undefined) {
-      if (opt.required) {
-        throw new RequiredError(fieldName, opt.required);
+      if (required) {
+        throw new RequiredError(fieldName);
       }
+      // @ts-ignore 这里会根据配置选项使用 GetReturnType 决定返回类型
       return;
     }
     value = opt.default;
@@ -176,10 +98,10 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
   }
 
   function doCast(value:any) {
-    const out = typeCastMap[<Keys>opt.type](value);
+    const out = typeCastMap[<CastKeys>opt.type](value);
     // 是否转换成功
     if (out === undefined) {
-      if (!opt.required) return;
+      if (!required) return;
       throw new ValidateError(fieldName, 'cast', value, opt.type);
     }
     // 结果验证
@@ -202,10 +124,10 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
 
   let out: any;
 
-  if (opt.splitter) {
+  if (toArray) {
     let list: any[];
     if (typeof value === 'string') {
-      list = value.split(opt.splitter);
+      list = value.split(opt.splitter || ',');
     } else if (Array.isArray(value)) {
       list = value;
     } else if (value && value[Symbol.iterator]) {
@@ -230,28 +152,23 @@ export function typeCast<O extends CastOption>(value: any, option: O, fieldName 
   return out;
 }
 
-export type TypeCastPickOption = { [field: string]: (CastOption & {
-  /**
-   * 来自 input 中的那个键，默认使用 field 键名
-   */
-  field?: string;
-}) | TypeKeys };
-
 /**
  * 挑选输入值并进行类型转换
  */
-export function typeCastPick<O extends TypeCastPickOption>(input: any, fieldOpts: O) {
+export function typeCastPick<O extends PickOption>(input: any, fieldOpts: O): GetPickReturnType<O> {
   const out: { [field: string]: any } = {};
   if (typeof input !== "object") {
     input = {};
   }
-  for (const fieldName of Object.keys(fieldOpts)) {
-    const o = fieldOpts[fieldName];
+  for (const [fieldName, o] of Object.entries(fieldOpts)) {
     const opt = typeof o === "string" ? { type: o } : o;
-    const value = typeCast(input[opt.field || fieldName], opt, fieldName);
+    if (!opt.field) {
+      opt.field = fieldName;
+    }
+    const value = typeCast(input[opt.field], opt);
     if (value !== undefined) {
       out[fieldName] = value;
     }
   }
-  return out as { [K in keyof O]: O[K] extends CastOption ? GetReturnType<O[K]> : O[K] extends TypeKeys ? TypeMap[O[K]] : never };
+  return <any> out;
 }
