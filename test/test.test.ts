@@ -187,7 +187,8 @@ describe('test', function() {
       a: '!int',
       b: '!trim',
       obj: {
-        type: {
+        type: '!object',
+        pick: {
           aa: '!number',
           bb: {
             type: '!string',

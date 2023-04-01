@@ -68,13 +68,28 @@ export type TypeMap = CastReturns & ArrayReturns
 export type TypeKeys = keyof TypeMap;
 
 /**
+ * 对象类型
+ */
+export type ObjectTypes<O extends PickOption> = {
+  'object': { [K in keyof O]: GetPickReturnType<O, K> } | undefined | null;
+  '!object': { [K in keyof O]: GetPickReturnType<O, K> };
+  '~object': { [K in keyof O]: GetPickReturnType<O, K> } | null;
+  '?object': { [K in keyof O]: GetPickReturnType<O, K> } | undefined;
+  'object[]': { [K in keyof O]: GetPickReturnType<O, K> }[] | undefined | null;
+  '!object[]': { [K in keyof O]: GetPickReturnType<O, K> }[];
+  '~object[]': { [K in keyof O]: GetPickReturnType<O, K> }[] | null;
+  '?object[]': { [K in keyof O]: GetPickReturnType<O, K> }[] | undefined;
+}
+export type ObjectKeys = keyof ObjectTypes<any>;
+
+/**
  * 数据转换校验选项
  */
 export interface CastOption {
   /**
    * 目标类型
    */
-  type: TypeKeys | PickOption;
+  type: TypeKeys | ObjectKeys;
 
   /** 默认值 */
   default?: any;
@@ -101,32 +116,12 @@ export interface CastOption {
    * 来自 input 中的那个键，默认使用 field 键名
    */
   field?: string;
-}
-
-/** */
-export interface ObjectType {
-  /**
-   * 挑选对象中的属性
-   */
-  pick: PickOption;
 
   /**
-   * 必填项
-   * @default false
+   * 'object' 类型专用
+   * - 如果不设置 object 类型将不会进行类型转换与检查直接返回原始对象
    */
-  required?: boolean;
-
-  /**
-   * 允许传入空对象
-   * @default true
-   */
-  nullable?: boolean;
-
-  /**
-   * 数组类型
-   * @default false
-   */
-  isArray?: boolean;
+  pick?: PickOption;
 }
 
 /**
@@ -137,9 +132,14 @@ export type PickOption = { [field: string]: TypeKeys | CastOption };
 /**
  * 获取返回类型
  */
-export type GetReturnType<O extends CastOption> = (
-  O['type'] extends TypeKeys ? TypeMap[O['type']] :
-  O['type'] extends PickOption ? { [K2 in keyof O['type']]: GetPickReturnType<O['type'], K2> } : never);
+export type GetReturnType<O extends CastOption> =
+  O['type'] extends ObjectKeys
+  ? O['pick'] extends PickOption
+    ? ObjectTypes<O['pick']>[O['type']]
+    : unknown
+  : O['type'] extends TypeKeys
+    ? TypeMap[O['type']]
+    : never;
 
 /**
  * 获取对象返回类型
@@ -147,11 +147,13 @@ export type GetReturnType<O extends CastOption> = (
 export type GetPickReturnType<O extends PickOption, K extends keyof O> = 
   O[K] extends CastOption
   ? (
-    O[K]['type'] extends TypeKeys
-    ? TypeMap[O[K]['type']]
-    : O[K]['type'] extends PickOption
-    ? { [K2 in keyof O[K]['type']]: GetPickReturnType<O[K]['type'], K2> }
-    : never
+    O[K]['type'] extends ObjectKeys
+    ? O[K]['pick'] extends PickOption
+      ? ObjectTypes<O[K]['pick']>[O[K]['type']]
+      : unknown
+    : O[K]['type'] extends TypeKeys
+      ? TypeMap[O[K]['type']]
+      : never
   ) : (
     O[K] extends TypeKeys
     ? TypeMap[O[K]]

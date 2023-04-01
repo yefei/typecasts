@@ -39,36 +39,33 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
     throw new TypeError('type is required');
   }
 
-  if (typeof opt.type === 'object') {
-    return <any> typeCastPick(value, opt.type);
-  }
-
   let required = false;
   let nullable = true;
   let toArray = false;
+  let type = opt.type;
 
   // 模式
-  switch (opt.type[0]) {
+  switch (type[0]) {
     case '!':
-      opt.type = <TypeKeys> opt.type.slice(1);
+      type = <TypeKeys> type.slice(1);
       required = true;
       nullable = false;
       break;
     case '~':
-      opt.type = <TypeKeys> opt.type.slice(1);
+      type = <TypeKeys> type.slice(1);
       required = true;
       nullable = true;
       break;
     case '?':
-      opt.type = <TypeKeys> opt.type.slice(1);
+      type = <TypeKeys> type.slice(1);
       required = false;
       nullable = false;
       break;
   }
 
   // 数组模式
-  if (opt.type.endsWith('[]')) {
-    opt.type = <TypeKeys> opt.type.slice(0, -2);
+  if (type.endsWith('[]')) {
+    type = <TypeKeys> type.slice(0, -2);
     toArray = true;
   }
 
@@ -76,7 +73,7 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
 
   if (value === null) {
     if (!nullable) {
-      throw new ValidateError(fieldName, 'notNull', value, opt.type);
+      throw new ValidateError(fieldName, 'notNull', value, type);
     }
     // @ts-ignore 这里会根据配置选项使用 GetReturnType 决定返回类型
     return null;
@@ -93,16 +90,23 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
     value = opt.default;
   }
 
-  if (!(opt.type in typeCastMap)) {
-    throw new TypeError('Unknown cast type: ' + opt.type);
+  if (type === 'object') {
+    if (!opt.pick) {
+      return value;
+    }
+    return <any> typeCastPick(value, opt.pick);
+  }
+
+  if (!(type in typeCastMap)) {
+    throw new TypeError(`Unknown cast type: ${type}`);
   }
 
   function doCast(value:any) {
-    const out = typeCastMap[<CastKeys>opt.type](value);
+    const out = typeCastMap[<CastKeys>type](value);
     // 是否转换成功
     if (out === undefined) {
       if (!required) return;
-      throw new ValidateError(fieldName, 'cast', value, opt.type);
+      throw new ValidateError(fieldName, 'cast', value, type);
     }
     // 结果验证
     if (opt.validate) {
@@ -175,9 +179,12 @@ export function typeCastPick<O extends PickOption>(input: any, fieldOpts: O) {
   };
 }
 
-
+/*
 const k = typeCast(null, {
-  type: '!int',
+  type: '!object',
+  pick: {
+    bb: '!bool',
+  }
 });
 
 const a = typeCastPick({}, {
@@ -186,15 +193,11 @@ const a = typeCastPick({}, {
     type: '!bool',
   },
   obj: {
-    type: {
-      kkk: '?date',
-      ttt: '?string',
-      k2: {
-        type: {
-          k3: '!trim'
-        }
-      }
+    type: '~object[]',
+    pick: {
+      ob1: 'int',
+      ob2: 'bool',
     }
   }
 });
-
+*/
