@@ -103,6 +103,32 @@ export interface CastOption {
   field?: string;
 }
 
+/** */
+export interface ObjectType {
+  /**
+   * 挑选对象中的属性
+   */
+  pick: PickOption;
+
+  /**
+   * 必填项
+   * @default false
+   */
+  required?: boolean;
+
+  /**
+   * 允许传入空对象
+   * @default true
+   */
+  nullable?: boolean;
+
+  /**
+   * 数组类型
+   * @default false
+   */
+  isArray?: boolean;
+}
+
 /**
  * 获取对象返回类型
  */
@@ -113,27 +139,24 @@ export type PickOption = { [field: string]: TypeKeys | CastOption };
  */
 export type GetReturnType<O extends CastOption> = (
   O['type'] extends TypeKeys ? TypeMap[O['type']] :
-  O['type'] extends PickOption ? GetPickReturnType<O['type']> : never);
+  O['type'] extends PickOption ? { [K2 in keyof O['type']]: GetPickReturnType<O['type'], K2> } : never);
 
 /**
  * 获取对象返回类型
  */
-export type GetPickReturnType<O extends PickOption> = {
-  [K in keyof O]: (
-    O[K] extends CastOption
-    ? (
-      O[K]['type'] extends TypeKeys
-      ? TypeMap[O[K]['type']]
-      : O[K]['type'] extends PickOption
-      ? GetPickReturnType<O[K]['type']>
-      : never
-    ) : (
-      O[K] extends TypeKeys
-      ? TypeMap[O[K]]
-      : never
-    )
-  )
-};
+export type GetPickReturnType<O extends PickOption, K extends keyof O> = 
+  O[K] extends CastOption
+  ? (
+    O[K]['type'] extends TypeKeys
+    ? TypeMap[O[K]['type']]
+    : O[K]['type'] extends PickOption
+    ? { [K2 in keyof O[K]['type']]: GetPickReturnType<O[K]['type'], K2> }
+    : never
+  ) : (
+    O[K] extends TypeKeys
+    ? TypeMap[O[K]]
+    : never
+  );
 
 /**
  * 支持的验证类型名称

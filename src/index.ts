@@ -155,7 +155,7 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
 /**
  * 挑选输入值并进行类型转换
  */
-export function typeCastPick<O extends PickOption>(input: any, fieldOpts: O): GetPickReturnType<O> {
+export function typeCastPick<O extends PickOption>(input: any, fieldOpts: O) {
   const out: { [field: string]: any } = {};
   if (typeof input !== "object") {
     input = {};
@@ -170,5 +170,31 @@ export function typeCastPick<O extends PickOption>(input: any, fieldOpts: O): Ge
       out[fieldName] = value;
     }
   }
-  return <any> out;
+  return out as {
+    [K in keyof O]: GetPickReturnType<O, K>
+  };
 }
+
+
+const k = typeCast(null, {
+  type: '!int',
+});
+
+const a = typeCastPick({}, {
+  aaa: '!int',
+  bbb: {
+    type: '!bool',
+  },
+  obj: {
+    type: {
+      kkk: '?date',
+      ttt: '?string',
+      k2: {
+        type: {
+          k3: '!trim'
+        }
+      }
+    }
+  }
+});
+
