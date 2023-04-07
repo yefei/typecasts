@@ -12,9 +12,10 @@ export const typeCastMap = {
     if (!isNaN(out)) return out;
   },
   bool(value: any) {
+    if (typeof value === 'boolean') return value;
     const v = typeCastMap.trim(value);
     if (!v) return false;
-    return ['y', '1', 'yes', 'on', 'true'].indexOf(v.toLowerCase()) !== -1;
+    return ['y', '1', 'yes', 'on', 'true', 't'].indexOf(v.toLowerCase()) !== -1;
   },
   trim(value: any) {
     if (typeof value !== 'string') {

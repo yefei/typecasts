@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.0.2] - 2023-4-7
+- fix: bool 类型判断 `true` 为 `false` 
+
 ## [3.0.1] - 2023-4-7
 - trim2 -> trim1 并改进潜在 bug
 - 整理代码

@@ -32,7 +32,7 @@ describe('test', function() {
     });
     assert.deepStrictEqual(v, {
       a: 1,
-      b: false,
+      b: true,
       c: 'str',
       d: [ 1, 2, 3, 4 ],
       e: new Date('2021-5-13 13:11:22'),
@@ -204,5 +204,12 @@ describe('test', function() {
         bb: 'bb',
       }
     });
+  });
+
+  it("bool=true", function(){
+    const v = typeCastPick({ t: true }, {
+      t: '!bool',
+    });
+    assert.deepStrictEqual(v, { t: true });
   });
 });
