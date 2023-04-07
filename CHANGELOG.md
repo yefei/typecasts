@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.1] - 2023-4-7
+- trim2 -> trim1 并改进潜在 bug
+- 整理代码
+
 ## [3.0.0] - 2023-4-1
 - 移除 type: PickOption 功能，改用 'object' 类型并使用 `CastOption.pick: PickOption` 替代
 

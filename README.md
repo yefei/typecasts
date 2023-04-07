@@ -98,8 +98,9 @@ console.log(v);
 | int  | `number`  | 转换为整数类型 |
 | float  | `number`  | 转换为浮点数类型 |
 | bool  | `boolean`  | 转换为布尔类型，只有值为 y, 1, yes, on, true (不区分类型)才会被判定为 true，其他都为 false |
-| trim  | `string`  | 转换为字符串并去除两端的空字符 |
 | string  | `string`  | 转换为字符串 |
+| trim  | `string`  | 转换为字符串并去除两端的空字符 |
+| trim1  | `string`  | 转换为字符串并去除两端的空字符，但结果不能为空字符串 |
 | any  | `any` | 不进行类型转换，直接输出原始类型 |
 | date  | `Date`  | 转换为日期类型 |
 

@@ -1,4 +1,4 @@
-const typeCastMap = {
+export const typeCastMap = {
   number(value: any) {
     const out = Number(value);
     if (!isNaN(out)) return out;
@@ -17,13 +17,19 @@ const typeCastMap = {
     return ['y', '1', 'yes', 'on', 'true'].indexOf(v.toLowerCase()) !== -1;
   },
   trim(value: any) {
-    if (typeof value === 'string') return value.trim();
-    return typeCastMap.string(value);
+    if (typeof value !== 'string') {
+      value = typeCastMap.string(value);
+    }
+    if (value !== undefined) {
+      return value.trim() as string;
+    }
   },
-  /** 清理两端空白字符，且清理完的结果不能为空字符串 */
-  trim2(value: any) {
-    const out = typeCastMap.string(value);
-    if (out && out.trim()) return out.trim();
+  /** 清理完成的结果至少有一个字符 */
+  trim1(value: any) {
+    value = typeCastMap.trim(value);
+    if (value) {
+      return value as string;
+    }
   },
   string(value: any) {
     if (['string', 'number', 'bigint'].includes(typeof value)) {
@@ -39,6 +45,11 @@ const typeCastMap = {
       if (out.getTime()) return out;
     }
   },
+  /*
+  json(value: any) {
+    try {
+      return JSON.parse(value) as unknown;
+    } catch {}
+  },
+  */
 };
-
-export default typeCastMap;

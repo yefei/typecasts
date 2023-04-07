@@ -1,4 +1,4 @@
-export default {
+export const validateMap = {
   /**
    * 小于 <
    */

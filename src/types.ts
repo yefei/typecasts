@@ -1,5 +1,5 @@
-import typeCastMap from './casts';
-import validateMap from './validates';
+import { typeCastMap } from './casts';
+import { validateMap } from './validates';
 
 /**
  * 支持的类型
