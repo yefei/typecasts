@@ -148,7 +148,7 @@ describe('test', function() {
 
   it("[undefined filter]", function(){
     const v = typeCast('', { type: 'int[]' });
-    assert.deepStrictEqual(v, []);
+    assert.deepStrictEqual(v, undefined);
   });
 
   it("pick field", function(){

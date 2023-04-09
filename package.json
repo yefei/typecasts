@@ -1,6 +1,6 @@
 {
   "name": "typecasts",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "exports": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "author": "YeFei <316606233@qq.com>",

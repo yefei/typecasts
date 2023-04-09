@@ -1,4 +1,4 @@
-import { typeCastMap } from './casts';
+import { nonemptyTypes, typeCastMap } from './casts';
 import { validateMap } from './validates';
 import { CastOption, TypeKeys, CastKeys, ValidateKeys, PickOption, GetReturnType, GetPickReturnType } from './types';
 import { RequiredError, ValidateError } from './errors';
@@ -57,7 +57,7 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
     return null;
   }
 
-  if (value === undefined) {
+  if (value === undefined || (value === '' && nonemptyTypes.includes(type))) {
     if (opt.default === undefined) {
       if (required) {
         throw new RequiredError(fieldName);

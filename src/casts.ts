@@ -1,17 +1,15 @@
 export const typeCastMap = {
   number(value: any) {
     const out = Number(value);
-    if (!isFinite(out)) return out;
+    if (isFinite(out)) return out;
   },
   int(value: any) {
-    if (value === '') return 0;
     const out = parseInt(value);
-    if (!isFinite(out)) return out;
+    if (isFinite(out)) return out;
   },
   float(value: any) {
-    if (value === '') return 0;
     const out = parseFloat(value);
-    if (!isFinite(out)) return out;
+    if (isFinite(out)) return out;
   },
   bool(value: any) {
     if (typeof value === 'boolean') return value;
@@ -56,3 +54,11 @@ export const typeCastMap = {
   },
   */
 };
+
+/**
+ * 非空字符类型表示
+ * - 用于判断空字符串是否为非值
+ */
+export const nonemptyTypes = [
+  'number', 'int', 'float', 'date'
+];
