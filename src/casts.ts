@@ -1,15 +1,17 @@
 export const typeCastMap = {
   number(value: any) {
     const out = Number(value);
-    if (!isNaN(out)) return out;
+    if (!isFinite(out)) return out;
   },
   int(value: any) {
+    if (value === '') return 0;
     const out = parseInt(value);
-    if (!isNaN(out)) return out;
+    if (!isFinite(out)) return out;
   },
   float(value: any) {
+    if (value === '') return 0;
     const out = parseFloat(value);
-    if (!isNaN(out)) return out;
+    if (!isFinite(out)) return out;
   },
   bool(value: any) {
     if (typeof value === 'boolean') return value;

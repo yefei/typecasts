@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.0.3] - 2023-4-9
+- int float 判断 isFinite, 如果传入值为 '' 则返回 0
+
 ## [3.0.2] - 2023-4-7
 - fix: bool 类型判断 `true` 为 `false` 
 
