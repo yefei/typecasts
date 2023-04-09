@@ -119,11 +119,11 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
     }
 
     // 是否限制输入条数
-    if (opt.maxItems && value.length > opt.maxItems) {
-      throw new ValidateError(fieldName, 'maxItems', value.length, opt.maxItems);
+    if (opt.maxItems && list.length > opt.maxItems) {
+      throw new ValidateError(fieldName, 'maxItems', list.length, opt.maxItems);
     }
-    if (opt.minItems && value.length < opt.minItems) {
-      throw new ValidateError(fieldName, 'minItems', value.length, opt.minItems);
+    if (opt.minItems && list.length < opt.minItems) {
+      throw new ValidateError(fieldName, 'minItems', list.length, opt.minItems);
     }
 
     out = list.map(doCast).filter(i => i !== undefined);
