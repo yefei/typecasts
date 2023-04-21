@@ -4,63 +4,92 @@ import { validateMap } from './validates';
 /**
  * 支持的类型
  */
-type CastTypes = typeof typeCastMap;
+export type CastTypes = typeof typeCastMap;
+
+/**
+ * 类型 key
+ */
 export type CastKeys = keyof CastTypes;
-type CastReturns = { [K in CastKeys]: ReturnType<CastTypes[K]> | undefined | null };
-type CastBasics = { [K in CastKeys]: Exclude<ReturnType<CastTypes[K]>, undefined> };
 
 /**
- * 数组模式
+ * 类型 key 对应的返回基本类型
  */
-type ArrayReturns = { [K in CastKeys as `${K}[]`]: CastBasics[K][] | null | undefined };
+export type BasicReturns = { [K in CastKeys]: NonNullable<ReturnType<CastTypes[K]>> };
+
+/**
+ * 类型 key 对应的返回默认类型
+ */
+export type CastReturns = { [K in CastKeys]: BasicReturns[K] | null | undefined };
+
+//////////////////////////////////////////////////
+
+/**
+ * 数组类型 key 对应的返回类型
+ */
+export type ListReturns = { [K in CastKeys as `${K}[]`]: BasicReturns[K][] | null | undefined };
+
+/**
+ * 数组类型 key
+ */
+export type ListKeys = keyof ListReturns;
+
+/**
+ * 类型 key + 数组类型 key
+ */
+export type CastAndListKeys = CastKeys | ListKeys;
+
+/**
+ * 类型 key + 数组类型 key 的返回类型
+ */
+export type CastAndListReturns = CastReturns & ListReturns;
 
 //////////////////////////////////////////////////
 
 /**
  * 允许 undefined
  */
-type UndefinedReturns = { [K in CastKeys as `?${K}`]: CastBasics[K] | undefined };
+export type UndefinedReturns = { [K in CastKeys as `?${K}`]: BasicReturns[K] | undefined };
 
 /**
  * 允许 undefined
  * 数组模式
  */
-type UndefinedArrayReturns = { [K in CastKeys as `?${K}[]`]: CastBasics[K][] | undefined };
+export type UndefinedListReturns = { [K in CastKeys as `?${K}[]`]: BasicReturns[K][] | undefined };
 
 //////////////////////////////////////////////////
 
 /**
  * 允许 null
  */
-type NullableReturns = { [K in CastKeys as `~${K}`]: Exclude<CastReturns[K], undefined> };
+export type NullableReturns = { [K in CastKeys as `~${K}`]: BasicReturns[K] | null };
 
 /**
  * 允许 null
  * 数组模式
  */
-type NullableArrayReturns = { [K in CastKeys as `~${K}[]`]: CastBasics[K][] | null };
+export type NullableListReturns = { [K in CastKeys as `~${K}[]`]: BasicReturns[K][] | null };
 
 //////////////////////////////////////////////////
 
 /**
  * 严格模式
  */
-type StrictReturns = { [K in CastKeys as `!${K}`]: CastBasics[K] };
+export type StrictReturns = { [K in CastKeys as `!${K}`]: BasicReturns[K] };
 
 /**
  * 严格数组模式
  */
-type StrictArrayReturns = { [K in CastKeys as `!${K}[]`]: CastBasics[K][] };
+export type StrictListReturns = { [K in CastKeys as `!${K}[]`]: BasicReturns[K][] };
 
 //////////////////////////////////////////////////
 
 /**
  * 类型名称对应的类型
  */
-export type TypeMap = CastReturns & ArrayReturns
-  & UndefinedReturns & UndefinedArrayReturns
-  & NullableReturns & NullableArrayReturns
-  & StrictReturns & StrictArrayReturns;
+export type TypeMap = CastReturns & ListReturns
+  & UndefinedReturns & UndefinedListReturns
+  & NullableReturns & NullableListReturns
+  & StrictReturns & StrictListReturns;
 
 /**
  * 所有支持的转换类型名称
