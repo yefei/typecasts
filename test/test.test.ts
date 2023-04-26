@@ -212,4 +212,18 @@ describe('test', function() {
     });
     assert.deepStrictEqual(v, { t: true });
   });
+
+  it("object[]", function(){
+    const v = typeCastPick({ arr: [
+      { id: 1 },
+    ] }, {
+      arr: {
+        type: '!object[]',
+        pick: {
+          id: '!int',
+        }
+      }
+    });
+    assert.deepStrictEqual(v, { arr: [ { id: 1 } ] });
+  });
 });

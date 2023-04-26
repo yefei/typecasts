@@ -68,11 +68,36 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
     value = opt.default;
   }
 
+  /**
+   * 数组条数限制检查
+   */
+  function arrayItemsLimit(length: number) {
+    // 是否限制输入条数
+    if (opt.maxItems && length > opt.maxItems) {
+      throw new ValidateError(fieldName, 'maxItems', length, opt.maxItems);
+    }
+    if (opt.minItems && length < opt.minItems) {
+      throw new ValidateError(fieldName, 'minItems', length, opt.minItems);
+    }
+  }
+
   if (type === 'object') {
-    if (!opt.pick) {
+    const _pick = opt.pick;
+    if (!_pick) {
       return value;
     }
-    return <any> typeCastPick(value, opt.pick);
+    // object[]
+    if (toArray) {
+      if (!Array.isArray(value)) {
+        throw new ValidateError(fieldName, 'isArray', value, '[]');
+      }
+      arrayItemsLimit(value.length);
+      return <any> value.map(i => typeCastPick(i, _pick));
+    }
+    // object
+    else {
+      return <any> typeCastPick(value, _pick);
+    }
   }
 
   if (!(type in typeCastMap)) {
@@ -118,13 +143,7 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
       list = [value];
     }
 
-    // 是否限制输入条数
-    if (opt.maxItems && list.length > opt.maxItems) {
-      throw new ValidateError(fieldName, 'maxItems', list.length, opt.maxItems);
-    }
-    if (opt.minItems && list.length < opt.minItems) {
-      throw new ValidateError(fieldName, 'minItems', list.length, opt.minItems);
-    }
+    arrayItemsLimit(list.length);
 
     out = list.map(doCast).filter(i => i !== undefined);
   } else {

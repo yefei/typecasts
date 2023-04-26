@@ -1,5 +1,3 @@
-import { CastKeys } from "./types";
-
 export const typeCastMap = {
   number(value: any) {
     const out = Number(value);
@@ -61,6 +59,6 @@ export const typeCastMap = {
  * 非空字符类型表示
  * - 用于判断空字符串是否为非值
  */
-export const nonemptyTypes: CastKeys[] = [
+export const nonemptyTypes = [
   'number', 'int', 'float', 'date'
 ];
