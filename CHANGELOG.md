@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.1.2] - 2023-5-17
+- fix: bool 类型空字符返回 undefined
+
 ## [3.1.1] - 2023-4-26
 - fix: object[] 对象数组解析
 

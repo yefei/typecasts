@@ -14,7 +14,7 @@ export const typeCastMap = {
   bool(value: any) {
     if (typeof value === 'boolean') return value;
     const v = typeCastMap.trim(value);
-    if (!v) return false;
+    if (!v) return;
     return ['y', '1', 'yes', 'on', 'true', 't'].indexOf(v.toLowerCase()) !== -1;
   },
   trim(value: any) {
