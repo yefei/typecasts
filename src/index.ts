@@ -59,6 +59,11 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
 
   if (value === undefined || (value === '' && nonemptyTypes.includes(type))) {
     if (opt.default === undefined) {
+      // 如果允许为 null, nonemptyTypes 中空字符串则转换为 null 类型
+      if (value === '' && nullable) {
+        // @ts-ignore
+        return null;
+      }
       if (required) {
         throw new RequiredError(fieldName);
       }

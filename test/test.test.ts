@@ -146,11 +146,6 @@ describe('test', function() {
     }, ValidateError);
   });
 
-  it("[undefined filter]", function(){
-    const v = typeCast('', { type: 'int[]' });
-    assert.deepStrictEqual(v, undefined);
-  });
-
   it("pick field", function(){
     const v = typeCastPick(inputData, {
       d: {
@@ -225,5 +220,24 @@ describe('test', function() {
       }
     });
     assert.deepStrictEqual(v, { arr: [ { id: 1 } ] });
+  });
+
+  it("empty to undefined", function(){
+    const v = typeCast('', { type: '?int' });
+    assert.deepStrictEqual(v, undefined);
+  });
+
+  it("empty to null", function(){
+    const v = typeCast('', { type: 'int' });
+    assert.deepStrictEqual(v, null);
+
+    const v2 = typeCast('', { type: '~int' });
+    assert.deepStrictEqual(v2, null);
+  });
+
+  it("empty required", function(){
+    assert.throws(() => {
+      typeCast('', { type: '!int' });
+    }, RequiredError);
   });
 });

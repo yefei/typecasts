@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.2.0] - 2023-5-19
+- 如果允许为 null, nonemptyTypes 中空字符串则转换为 null 类型
+
 ## [3.1.2] - 2023-5-17
 - fix: bool 类型空字符返回 undefined
 
