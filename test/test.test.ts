@@ -240,4 +240,8 @@ describe('test', function() {
       typeCast('', { type: '!int' });
     }, RequiredError);
   });
+
+  it("date 1970-1-1", function(){
+    assert.strictEqual(typeCast('1970-1-1 00:00:00.000Z', { type: 'date' })?.toJSON(), '1970-01-01T00:00:00.000Z');
+  });
 });

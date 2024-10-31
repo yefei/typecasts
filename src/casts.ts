@@ -43,7 +43,7 @@ export const typeCastMap = {
   date(value: any) {
     if (value) {
       const out = new Date(value);
-      if (out.getTime()) return out;
+      if (out.getFullYear()) return out;
     }
   },
   /*
