@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.0] - 2025-10-27
+- new validate: startsWith, endsWith, includes
+- export: hasValidateFail
+
 ## [3.2.1] - 2024-10-31
 - fix: date 为 1970-1-1 日时判断错误
 

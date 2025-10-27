@@ -1,9 +1,27 @@
 import { nonemptyTypes, typeCastMap } from './casts';
 import { validateMap } from './validates';
-import { CastOption, TypeKeys, CastKeys, ValidateKeys, PickOption, GetReturnType, GetPickReturnType } from './types';
+import { CastOption, TypeKeys, CastKeys, ValidateKeys, PickOption, GetReturnType, GetPickReturnType, ValidateOption } from './types';
 import { RequiredError, ValidateError } from './errors';
 export * from './types';
 export { RequiredError, ValidateError };
+
+/**
+ * 数据验证器
+ * 
+ * @param input 输入值
+ * @param validate 验证规则
+ * @returns 返回验证失败的规则
+ */
+export function hasValidateFail(input: unknown, validate: ValidateOption) {
+  for (const rule of <ValidateKeys[]>Object.keys(validate)) {
+    if (!(rule in validateMap)) {
+      throw new TypeError(`Unknown validate: ${rule}`);
+    }
+    if (!validateMap[rule](validate[rule])(input)) {
+      return rule;
+    }
+  }
+}
 
 /**
  * 类型转换
@@ -118,13 +136,9 @@ export function typeCast<O extends CastOption>(value: any, option: O): GetReturn
     }
     // 结果验证
     if (opt.validate) {
-      for (const valid of <ValidateKeys[]>Object.keys(opt.validate)) {
-        if (!(valid in validateMap)) {
-          throw new TypeError(`Unknown validate: ${valid} for ${fieldName}`);
-        }
-        if (!validateMap[valid](opt.validate[valid])(out)) {
-          throw new ValidateError(fieldName, valid, out, opt.validate[valid]);
-        }
+      const rule = hasValidateFail(out, opt.validate);
+      if (rule) {
+        throw new ValidateError(fieldName, rule, out, opt.validate[rule]);
       }
     }
     // 使用自定义过滤器

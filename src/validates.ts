@@ -70,6 +70,27 @@ export const validateMap = {
   },
 
   /**
+   * 开头必须为
+   */
+  startsWith(str: string) {
+    return (value: any) => typeof value === 'string' && value.startsWith(str);
+  },
+
+  /**
+   * 结尾必须为
+   */
+  endsWith(str: string) {
+    return (value: any) => typeof value === 'string' && value.endsWith(str);
+  },
+
+  /**
+   * 内容中必须包含
+   */
+  includes(str: string) {
+    return (value: any) => typeof value === 'string' && value.includes(str);
+  },
+
+  /**
    * 正则表达式匹配
    */
   regexp(pattern: string | RegExp) {
